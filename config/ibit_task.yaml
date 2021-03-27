@@ -1,0 +1,7 @@
+
+postgres:
+  database: ibit_task
+  user: ibit_task_admin
+  password: mewlDap=hispit9lCHiP
+  host: localhost
+  port: 5432
