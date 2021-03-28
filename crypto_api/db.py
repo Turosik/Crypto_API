@@ -16,7 +16,7 @@ meta = MetaData()
 def generate_api_key():
     import random
     import string
-    from datetime import datetime
+    # from datetime import datetime
     # random.seed(datetime.now())
     return ''.join(random.choice(string.ascii_letters) for _ in range(API_KEY_LENGTH))
     # return str(datetime.now())

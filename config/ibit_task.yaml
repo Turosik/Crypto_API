@@ -8,7 +8,7 @@ postgres:
 
 logger:
   stream: True
-  file_name: ibit_task.log
+  file_name: crypto_api.log
   level: 20
   # (reminder) Log Levels
   # CRITICAL - 50
