@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="DataSourceManagerImpl" format="xml" multifile-model="true">
-    <data-source source="LOCAL" name="ibit_task@localhost" uuid="3029e631-8b4a-48e6-a42a-06d0ad3d7c33">
+    <data-source source="LOCAL" name="ibit_task@localhost [2]" uuid="dfe2376f-f99d-4f5e-bc08-9f6f052ecb46">
       <driver-ref>postgresql</driver-ref>
       <synchronize>true</synchronize>
       <jdbc-driver>org.postgresql.Driver</jdbc-driver>

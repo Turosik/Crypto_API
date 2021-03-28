@@ -1,1 +1,2 @@
-curl -X POST -H "Content-Type:application/json" --data '{"api_key":"ytJutPoxZXuJFEdvZKsmtzYzCcXRugyFZJKOmGOjdIywBzOVYGMOrDVuNznbuxWk"}' 0.0.0.0:8080/api-key
+curl -X POST -H "Content-Type:application/json" --data '{"api_key":"accAcSuylVHqBlYnhxctlYtMwlXEyWqGzGyZQggIZksOEqluzqwdQuBHxYZxXuIH"}' 0.0.0.0:8080/api-key
+curl -X POST -H "Content-Type:application/json" --data '{"api_key":"abc"}' 0.0.0.0:8080/api-key
