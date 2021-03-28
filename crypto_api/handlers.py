@@ -29,10 +29,16 @@ async def api_key_check(request):
     print(dir(post_data))
     for key in post_data.keys():
         print(key)
+    print(post_data['api_key'])
     async with request.app['db'].acquire() as conn:
-        result = await conn.execute(db.user.select().where(user.c.api_key == post_data.api_key))
+        # result = await conn.execute(db.user.select().where(user.columns.api_key == post_data['api_key']))
+        if (post_data['api_key'] == 'ytJutPoxZXuJFEdvZKsmtzYzCcXRugyFZJKOmGOjdIywBzOVYGMOrDVuNznbuxWk'):
+            print('ok')
+        result = await conn.execute(db.user.select().where(user.c.api_key == 'ytJutPoxZXuJFEdvZKsmtzYzCcXRugyFZJKOmGOjdIywBzOVYGMOrDVuNznbuxWk'))
         found_key = await result.first()
-        if not found_key:
+        print(found_key)
+        if found_key:
+            return web.json_response({'key': 'correct'})
+        else:
             return web.json_response({'key': 'invalid'})
 
-    return web.json_response({'key': 'correct'})
