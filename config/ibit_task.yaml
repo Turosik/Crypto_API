@@ -5,3 +5,15 @@ postgres:
   password: mewlDap=hispit9lCHiP
   host: localhost
   port: 5432
+
+logger:
+  stream: True
+  file_name: ibit_task.log
+  level: 20
+  # (reminder) Log Levels
+  # CRITICAL - 50
+  # ERROR    - 40
+  # WARNING  - 30
+  # INFO     - 20
+  # DEBUG    - 10
+  # NOTSET   - 0

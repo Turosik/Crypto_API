@@ -1,9 +1,10 @@
 import json
+from json import JSONDecodeError
 
 from aiohttp import web
 
 from crypto_api import db
-from crypto_api.db import user
+from crypto_api.utils import api_key_check, ApiKeyException
 
 
 async def handle(request):
@@ -21,24 +22,18 @@ async def ping(request):
     return web.json_response(pong)
 
 
-async def api_key_check(request):
+async def api_key_check_handler(request):
     raw_data = await request.read()
     json_string = raw_data.decode('utf-8')
-    post_data = json.loads(json_string)
-    print(post_data)
-    print(dir(post_data))
-    for key in post_data.keys():
-        print(key)
-    print(post_data['api_key'])
-    async with request.app['db'].acquire() as conn:
-        # result = await conn.execute(db.user.select().where(user.columns.api_key == post_data['api_key']))
-        if (post_data['api_key'] == 'accAcSuylVHqBlYnhxctlYtMwlXEyWqGzGyZQggIZksOEqluzqwdQuBHxYZxXuIH'):
-            print('ok')
-        result = await conn.execute(db.user.select().where(user.c.api_key == 'abc'))
-        found_key = await result.first()
-        print(found_key)
-        if found_key:
-            return web.json_response({'key': 'correct'})
-        else:
-            return web.json_response({'key': 'invalid'})
+
+    try:
+        key_check = await api_key_check(json_string, request.app['db'])
+    except ApiKeyException as api_key_exception:
+        return web.json_response({'api_key_error': api_key_exception.message})
+    except JSONDecodeError as json_decode_error:
+        return web.json_response({'api_key_error': json_decode_error.msg})
+    except Exception:
+        return web.json_response({'api_key_error': 'Exception'})
+
+    return web.json_response({'api_key_check': key_check})
 
