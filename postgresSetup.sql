@@ -1,6 +1,6 @@
 -- commands to setup database on clean Postges setup on a new machine or something like that
 -- sudo -u postgres psql -f postgresSetup.sql
-CREATE DATABASE ibit_task;
+CREATE DATABASE ibit_task WITH ENCODING = 'UTF8';
 CREATE USER ibit_task_admin WITH PASSWORD 'mewlDap=hispit9lCHiP';
 ALTER USER ibit_task_admin CREATEDB;
 ALTER ROLE ibit_task_admin SET client_encoding TO 'utf8';
