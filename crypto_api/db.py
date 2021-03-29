@@ -11,7 +11,6 @@ from sqlalchemy import func
 
 from crypto_api.settings import API_KEY_LENGTH
 
-
 __all__ = ['user', 'user_crypto_address']
 
 meta = MetaData()
@@ -52,8 +51,11 @@ async def close_pg(app):
 
 async def save_new_address(new_address, user_id, database):
     async with database.acquire() as conn:
-        result = await conn.execute(user_crypto_address.insert(), [{'id': 1, 'user': user_id, 'blockchain_address': new_address,
-                                                                    'blockchain_private_key': 'abc'}])
+        # posts.insert().values(body=post_body, user_id=user_id)
+        # result = await conn.execute(user_crypto_address.insert(), [{'user': user_id, 'blockchain_address': new_address,
+        #                                                             'blockchain_private_key': 'abc'}])
+        result = await conn.execute(user_crypto_address.insert().values(user=user_id, blockchain_address=new_address,
+                                                                        blockchain_private_key='abc'))
         record = await result.fetchone()
         if not record:
             raise RecordNotFound(inspect.stack()[1].function, 'Error saving new address for user {}'.format(user_id))
