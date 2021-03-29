@@ -1,4 +1,8 @@
+import inspect
+import logging
+
 import aiopg.sa
+from aiohttp import web
 from sqlalchemy import (
     MetaData, Table, Column, ForeignKey,
     Integer, String, DateTime
@@ -41,6 +45,35 @@ user_crypto_address = Table(
 )
 
 
+async def close_pg(app):
+    app['db'].close()
+    await app['db'].wait_closed()
+
+
+async def save_new_address(new_address, user_id, database):
+    async with database.acquire() as conn:
+        result = await conn.execute(user_crypto_address.insert(), [{'id': 1, 'user': user_id, 'blockchain_address': new_address,
+                                                                    'blockchain_private_key': 'abc'}])
+        record = await result.fetchone()
+        if not record:
+            raise RecordNotFound(inspect.stack()[1].function, 'Error saving new address for user {}'.format(user_id))
+
+        return web.json_response({'new_address': new_address})
+
+
+class RecordNotFound(Exception):
+    def __init__(self, caller, description):
+        self.caller = caller
+        self.message = description
+
+        # use only logger for output, further behavior depends on logger settings
+        logger = logging.getLogger(__package__)
+        logger.error(self.__str__())
+
+    def __str__(self):
+        return 'RECORD NOT FOUND (module {}): {}'.format(self.caller, self.message)
+
+
 async def init_pg(app):
     conf = app['config']['postgres']
     engine = await aiopg.sa.create_engine(
@@ -51,8 +84,3 @@ async def init_pg(app):
         port=conf['port'],
     )
     app['db'] = engine
-
-
-async def close_pg(app):
-    app['db'].close()
-    await app['db'].wait_closed()

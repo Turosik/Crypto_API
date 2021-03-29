@@ -1,6 +1,9 @@
 import inspect
 import json
 import logging
+from json import JSONDecodeError
+
+from aiohttp import web
 
 from crypto_api import db
 from crypto_api.db import user
@@ -45,17 +48,25 @@ class ApiKeyException(Exception):
 
 
 async def api_key_check(json_string, database):
-    post_data = json.loads(json_string)
+    try:
+        post_data = json.loads(json_string)
 
-    if 'api_key' not in post_data:
-        raise ApiKeyException(inspect.stack()[1].function, 'api key not found in POST data')
+        if 'api_key' not in post_data:
+            raise ApiKeyException(inspect.stack()[1].function, 'API key not found in POST data')
 
-    async with database.acquire() as conn:
-        result = await conn.execute(db.user.select().where(user.columns.api_key == post_data['api_key']))
-        found_key = await result.first()
+        async with database.acquire() as conn:
+            result = await conn.execute(db.user.select().where(user.columns.api_key == post_data['api_key']))
+            found_key = await result.first()
 
-        if found_key:
-            return True
-        else:
-            raise ApiKeyException(inspect.stack()[1].function, 'api key does not exist')
+            if found_key:
+                return True, web.json_response({'api_key_check': True}), found_key.id
+            else:
+                raise ApiKeyException(inspect.stack()[1].function, 'API key does not exist')
+
+    except ApiKeyException as api_key_exception:
+        return False, web.json_response({'api_key_error': api_key_exception.message}), None
+    except JSONDecodeError as json_decode_error:
+        return False, web.json_response({'api_key_error': json_decode_error.msg}), None
+    except Exception:
+        return False, web.json_response({'api_key_error': 'Exception'}), None
 

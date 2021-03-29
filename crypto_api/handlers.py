@@ -4,6 +4,8 @@ from json import JSONDecodeError
 from aiohttp import web
 
 from crypto_api import db
+from crypto_api.db import save_new_address, RecordNotFound
+from crypto_api.ethereum import create_new_address
 from crypto_api.utils import api_key_check, ApiKeyException
 
 
@@ -25,15 +27,19 @@ async def ping(request):
 async def api_key_check_handler(request):
     raw_data = await request.read()
     json_string = raw_data.decode('utf-8')
+    _, response, _ = await api_key_check(json_string, request.app['db'])
+    return response
 
-    try:
-        key_check = await api_key_check(json_string, request.app['db'])
-    except ApiKeyException as api_key_exception:
-        return web.json_response({'api_key_error': api_key_exception.message})
-    except JSONDecodeError as json_decode_error:
-        return web.json_response({'api_key_error': json_decode_error.msg})
-    except Exception:
-        return web.json_response({'api_key_error': 'Exception'})
 
-    return web.json_response({'api_key_check': key_check})
-
+async def api_create_address(request):
+    raw_data = await request.read()
+    json_string = raw_data.decode('utf-8')
+    key_check, response, user_id = await api_key_check(json_string, request.app['db'])
+    if key_check:
+        new_address = await create_new_address()
+        try:
+            response = await save_new_address(new_address, user_id, request.app['db'])
+        except RecordNotFound as exception:
+            # TODO handle exceptions
+            pass
+    return response
