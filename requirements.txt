@@ -2,3 +2,4 @@ aiohttp>=3.7.4.post0
 aiopg>=1.2.1
 SQLAlchemy>=1.4.3
 PyYAML>=5.4.1
+web3>=5.17.0
