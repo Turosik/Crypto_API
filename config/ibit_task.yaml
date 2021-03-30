@@ -6,6 +6,10 @@ postgres:
   host: localhost
   port: 5432
 
+ethereum:
+  IP: 127.0.0.1
+  port: 8545
+
 logger:
   stream: True
   file_name: crypto_api.log

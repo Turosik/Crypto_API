@@ -35,10 +35,17 @@ async def api_create_address(request):
     raw_data = await request.read()
     json_string = raw_data.decode('utf-8')
     key_check, response, user_id = await api_key_check(json_string, request.app['db'])
+    post_data = json.loads(json_string)
+    if 'password' not in post_data:
+        return web.json_response({'account_creation_error': 'Password not found in POST data'})
+    password = post_data['password']
+    if not password:
+        return web.json_response({'account_creation_error': 'Password should not be empty'})
+
     if key_check:
-        new_address = await create_new_address()
+        new_address, private_key = await create_new_address(password)
         try:
-            response = await save_new_address(new_address, user_id, request.app['db'])
+            response = await save_new_address(new_address, private_key, user_id, request.app['db'])
         except RecordNotFound as exception:
             # TODO handle exceptions
             pass

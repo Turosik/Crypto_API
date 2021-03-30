@@ -19,10 +19,9 @@ meta = MetaData()
 def generate_api_key():
     import random
     import string
-    # from datetime import datetime
-    # random.seed(datetime.now())
+    from datetime import datetime
+    random.seed(datetime.now())
     return ''.join(random.choice(string.ascii_letters) for _ in range(API_KEY_LENGTH))
-    # return str(datetime.now())
 
 
 user = Table(
@@ -39,8 +38,8 @@ user_crypto_address = Table(
     Column('id', Integer, primary_key=True),
     Column('user', Integer, ForeignKey('api_users.id')),
     Column('created', DateTime, nullable=False, server_default=func.now()),
-    Column('blockchain_address', String(200), nullable=False),
-    Column('blockchain_private_key', String(200), nullable=False)
+    Column('blockchain_address', String(42), nullable=False),
+    Column('blockchain_private_key', String(64), nullable=False)
 )
 
 
@@ -49,13 +48,13 @@ async def close_pg(app):
     await app['db'].wait_closed()
 
 
-async def save_new_address(new_address, user_id, database):
+async def save_new_address(new_address, private_key, user_id, database):
     async with database.acquire() as conn:
         # posts.insert().values(body=post_body, user_id=user_id)
         # result = await conn.execute(user_crypto_address.insert(), [{'user': user_id, 'blockchain_address': new_address,
         #                                                             'blockchain_private_key': 'abc'}])
         result = await conn.execute(user_crypto_address.insert().values(user=user_id, blockchain_address=new_address,
-                                                                        blockchain_private_key='abc'))
+                                                                        blockchain_private_key=private_key))
         record = await result.fetchone()
         if not record:
             raise RecordNotFound(inspect.stack()[1].function, 'Error saving new address for user {}'.format(user_id))

@@ -69,4 +69,3 @@ async def api_key_check(json_string, database):
         return False, web.json_response({'api_key_error': json_decode_error.msg}), None
     except Exception:
         return False, web.json_response({'api_key_error': 'Exception'}), None
-
