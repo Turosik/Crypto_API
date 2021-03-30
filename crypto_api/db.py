@@ -43,16 +43,8 @@ user_crypto_address = Table(
 )
 
 
-async def close_pg(app):
-    app['db'].close()
-    await app['db'].wait_closed()
-
-
 async def save_new_address(new_address, private_key, user_id, database):
     async with database.acquire() as conn:
-        # posts.insert().values(body=post_body, user_id=user_id)
-        # result = await conn.execute(user_crypto_address.insert(), [{'user': user_id, 'blockchain_address': new_address,
-        #                                                             'blockchain_private_key': 'abc'}])
         result = await conn.execute(user_crypto_address.insert().values(user=user_id, blockchain_address=new_address,
                                                                         blockchain_private_key=private_key))
         record = await result.fetchone()
@@ -85,3 +77,8 @@ async def init_pg(app):
         port=conf['port'],
     )
     app['db'] = engine
+
+
+async def close_pg(app):
+    app['db'].close()
+    await app['db'].wait_closed()

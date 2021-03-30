@@ -1,17 +1,26 @@
 curl -X POST -H "Content-Type:application/json" --data '{"api_key":"accAcSuylVHqBlYnhxctlYtMwlXEyWqGzGyZQggIZksOEqluzqwdQuBHxYZxXuIH"}' 0.0.0.0:8080/api-key
 curl -X POST -H "Content-Type:application/json" --data '{"api_key":"abc"}' 0.0.0.0:8080/api-key
 curl -X POST -H "Content-Type:application/json" --data '{"api_key":"abc","password":"qwerty"}' 0.0.0.0:8080/create-address
-
+curl -X POST -H "Content-Type:application/json" --data '{"api_key":"123","address":"0xc122d8d0212a811606f502221a089bcc3c2d8897"}' 0.0.0.0:8080/get-balance
 
 /home/alexk/PycharmProjects/Ibit_task/ETH
-geth --datadir /home/alexk/PycharmProjects/Ibit_task/ETH init genesis.json
-geth --datadir /home/alexk/PycharmProjects/Ibit_task/ETH account new
-geth attach http://127.0.0.1:8545 --datadir /home/alexk/PycharmProjects/Ibit_task/ETH
+/home/turosik/PycharmProjects/Ibit_task/ETH
+geth --datadir /home/turosik/PycharmProjects/Ibit_task/ETH init genesis.json
+geth --datadir /home/turosik/PycharmProjects/Ibit_task/ETH account new
+geth attach http://127.0.0.1:8545 --datadir /home/turosik/PycharmProjects/Ibit_task/ETH
 
 Ethereum
-curl -X POST --data '{"jsonrpc":"2.0","method":"eth_getBalance","params":["0xcc0820ba7359a218abe321990abebba296e65f27", "latest"],"id":1}' 127.0.0.1:7545
+curl -X POST -H "Content-Type:application/json" --data '{"jsonrpc":"2.0","method":"eth_getBalance","params":["0x5aDe448076Ef1ED43d0C1949B82302a8771c23D3", "latest"],"id":1}' 127.0.0.1:8545
+curl -X POST -H "Content-Type:application/json" --data '{"jsonrpc":"2.0","method":"eth_getBalance","params":["0xc122d8d0212a811606f502221a089bcc3c2d8897", "latest"],"id":1}' 127.0.0.1:8545
+curl -X POST -H "Content-Type:application/json" --data '{"jsonrpc":"2.0","method":"eth_getBalance","params":["0x87c4496859d5ee16f96a3b49ec8e690470b21b53", "latest"],"id":1}' 127.0.0.1:8545
 curl -X POST --data '{"jsonrpc":"2.0","method":"personal_newAccount","params":["password"],"id":1}' 127.0.0.1:8545
 curl -X POST -H "Content-Type:application/json" --data '{"jsonrpc":"2.0","method":"personal_newAccount","params":["password"],"id":1}' 127.0.0.1:8545
 curl -X POST -H "Content-Type:application/json" --data '{"jsonrpc":"2.0","method": "personal_importRawKey", "params": ["dfe4cce025b13c4f01f2b4618731ed76de0b3f85987f47e4f8c134ef89d134d6", "string"]}' 127.0.0.1:8545
 curl -X POST -H "Content-Type:application/json" --data '{"jsonrpc":"2.0","method":"eth_accounts","params":[],"id":1}' 127.0.0.1:8545
 dfe4cce025b13c4f01f2b4618731ed76de0b3f85987f47e4f8c134ef89d134d6
+
+eth.sendTransaction({from: "0x5ade448076ef1ed43d0c1949b82302a8771c23d3", to: "0xc122d8d0212a811606f502221a089bcc3c2d8897", value: "10000000"})
+
+curl -X POST -H "Content-Type:application/json" --data '{"jsonrpc":"2.0","method":"eth_blockNumber","params":[],"id":83}' 127.0.0.1:8545
+
+

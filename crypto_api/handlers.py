@@ -1,12 +1,11 @@
 import json
-from json import JSONDecodeError
 
 from aiohttp import web
 
 from crypto_api import db
 from crypto_api.db import save_new_address, RecordNotFound
-from crypto_api.ethereum import create_new_address
-from crypto_api.utils import api_key_check, ApiKeyException
+from crypto_api.ethereum import create_new_address, get_balance
+from crypto_api.utils import api_key_check, address_owner_check
 
 
 async def handle(request):
@@ -55,11 +54,11 @@ async def api_create_address(request):
 async def api_get_balance(request):
     raw_data = await request.read()
     json_string = raw_data.decode('utf-8')
-    key_check, response, _ = await api_key_check(json_string, request.app['db'])
-    post_data = json.loads(json_string)
-    if 'address' not in post_data:
-        return web.json_response({'get_balance_error': 'Address not found in POST data'})
-    password = post_data['password']
-    if not password:
-        return web.json_response({'get_balance_error': 'Address should not be empty'})
+    key_check, response, user_id = await api_key_check(json_string, request.app['db'])
+    if key_check:
+        owner_check, response, address = await address_owner_check(user_id, json_string, request.app['db'])
+        if owner_check:
+            balance = await get_balance(address)
+            response = web.json_response({'balance': balance})
 
+    return response
