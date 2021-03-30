@@ -50,3 +50,16 @@ async def api_create_address(request):
             # TODO handle exceptions
             pass
     return response
+
+
+async def api_get_balance(request):
+    raw_data = await request.read()
+    json_string = raw_data.decode('utf-8')
+    key_check, response, _ = await api_key_check(json_string, request.app['db'])
+    post_data = json.loads(json_string)
+    if 'address' not in post_data:
+        return web.json_response({'get_balance_error': 'Address not found in POST data'})
+    password = post_data['password']
+    if not password:
+        return web.json_response({'get_balance_error': 'Address should not be empty'})
+
