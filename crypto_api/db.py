@@ -11,7 +11,7 @@ from sqlalchemy import func
 
 from crypto_api.settings import API_KEY_LENGTH
 
-__all__ = ['user', 'user_crypto_address']
+__all__ = ['user', 'user_crypto_address', 'api_transactions']
 
 meta = MetaData()
 
@@ -43,27 +43,15 @@ user_crypto_address = Table(
 )
 
 
-transactions = Table(
+api_transactions = Table(
     'api_transactions', meta,
     Column('id', Integer, primary_key=True),
-    Column('user', Integer, ForeignKey('api_users.id')),
     Column('created', DateTime, nullable=False, server_default=func.now()),
     Column('address_from', Integer, ForeignKey('api_user_addresses.id')),
     Column('address_to', String(42), nullable=False),
     Column('nonce', Integer, nullable=False),
     Column('tx_hash', String(66), nullable=False)
 )
-
-
-async def save_new_address(new_address, private_key, user_id, database):
-    async with database.acquire() as conn:
-        result = await conn.execute(user_crypto_address.insert().values(user=user_id, blockchain_address=new_address,
-                                                                        blockchain_private_key=private_key))
-        record = await result.fetchone()
-        if not record:
-            raise RecordNotFound(inspect.stack()[1].function, 'Error saving new address for user {}'.format(user_id))
-
-        return web.json_response({'new_address': new_address})
 
 
 class RecordNotFound(Exception):
@@ -77,6 +65,51 @@ class RecordNotFound(Exception):
 
     def __str__(self):
         return 'RECORD NOT FOUND (module {}): {}'.format(self.caller, self.message)
+
+
+async def save_new_address(new_address, private_key, user_id, database):
+    async with database.acquire() as conn:
+        result = await conn.execute(user_crypto_address.insert().values(user=user_id, blockchain_address=new_address,
+                                                                        blockchain_private_key=private_key))
+        record = await result.fetchone()
+        if not record:
+            raise RecordNotFound(inspect.stack()[1].function, 'Error saving new address for user {}'.format(user_id))
+
+        return web.json_response({'new_address': new_address})
+
+
+async def save_new_transaction(address_id, address_to, nonce, tx_hash, database):
+    async with database.acquire() as conn:
+        result = await conn.execute(api_transactions.insert().values(address_from=address_id, address_to=address_to,
+                                                                     nonce=nonce, tx_hash=tx_hash))
+        record = await result.fetchone()
+        if not record:
+            raise RecordNotFound(inspect.stack()[1].function, 'Error saving new transaction {}'.format(tx_hash))
+
+        return web.json_response({'new_transaction': tx_hash})
+
+
+async def get_address_attributes(address, database):
+    async with database.acquire() as conn:
+        result = await conn.execute(user_crypto_address.select()
+                                    .where(user_crypto_address.columns.blockchain_address == address))
+        record = await result.first()
+        if not record:
+            raise RecordNotFound(inspect.stack()[1].function, 'Error getting private key for address {}'.format(address))
+
+        return record.id, record.blockchain_private_key
+
+
+async def get_nonce(address_id, database) -> int:
+    async with database.acquire() as conn:
+        result = await conn.execute(api_transactions.select()
+                                    .where(api_transactions.columns.address_from == address_id)
+                                    .order_by(api_transactions.columns.nonce.desc()))
+        found = await result.fetchone()
+        if not found:
+            return 0
+
+        return found.nonce
 
 
 async def init_pg(app):

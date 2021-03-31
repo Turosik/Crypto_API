@@ -1,7 +1,7 @@
 from time import sleep
 
 from sqlalchemy import create_engine, MetaData
-from crypto_api.db import user, user_crypto_address
+from crypto_api.db import user, user_crypto_address, api_transactions
 from crypto_api.settings import config
 
 DSN = "postgresql://{user}:{password}@{host}:{port}/{database}"
@@ -9,8 +9,8 @@ DSN = "postgresql://{user}:{password}@{host}:{port}/{database}"
 
 def create_tables(_engine):
     meta = MetaData()
-    meta.drop_all(bind=_engine, tables=[user, user_crypto_address])
-    meta.create_all(bind=_engine, tables=[user, user_crypto_address])
+    meta.drop_all(bind=_engine, tables=[user, user_crypto_address, api_transactions])
+    meta.create_all(bind=_engine, tables=[user, user_crypto_address, api_transactions])
 
 
 def sample_data(_engine):

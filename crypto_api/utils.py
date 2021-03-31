@@ -109,13 +109,14 @@ async def address_owner_check(user_id, json_string, database, param_name):
             found_address = await result.first()
 
             if found_address:
-                return True, web.json_response({'address_owner_check': True}), found_address.blockchain_address
+                return True, web.json_response({'address_owner_check': True}),\
+                       found_address.blockchain_address, found_address.id
             else:
                 raise CryptoApiException(inspect.stack()[1].function, 'This is not your address')
 
     except CryptoApiException as address_exception:
-        return False, web.json_response({'address_error': address_exception.message}), None
+        return False, web.json_response({'address_error': address_exception.message}), None, None
     except JSONDecodeError as json_decode_error:
-        return False, web.json_response({'address_error': json_decode_error.msg}), None
+        return False, web.json_response({'address_error': json_decode_error.msg}), None, None
     except Exception:
-        return False, web.json_response({'address_error': 'Exception'}), None
+        return False, web.json_response({'address_error': 'Exception'}), None, None
