@@ -9,10 +9,12 @@ from crypto_api import db
 from crypto_api.db import user, user_crypto_address
 from crypto_api.settings import config, BASE_DIR
 
+logger = logging.getLogger(__package__)
+
 
 def config_logger():
-    logger = logging.getLogger(__package__)
-    logger.setLevel(config['logger']['level'])
+    _logger = logging.getLogger(__package__)
+    _logger.setLevel(config['logger']['level'])
     formatter = logging.Formatter('%(asctime)-23s %(levelname)-8s %(message)s')
 
     # try to create file handler
@@ -20,7 +22,7 @@ def config_logger():
         file_handler = logging.FileHandler(filename=BASE_DIR / config['logger']['file_name'], mode="a+")
         print('using log file name: {}'.format(file_handler.baseFilename))
         file_handler.setFormatter(formatter)
-        logger.addHandler(file_handler)
+        _logger.addHandler(file_handler)
     except FileNotFoundError:
         print('can not create log file')
 
@@ -29,9 +31,9 @@ def config_logger():
         stream_handler = logging.StreamHandler()
         stream_handler.setLevel(config['logger']['level'])
         stream_handler.setFormatter(formatter)
-        logger.addHandler(stream_handler)
+        _logger.addHandler(stream_handler)
 
-    return logger
+    return _logger
 
 
 class CryptoApiException(Exception):
@@ -40,7 +42,6 @@ class CryptoApiException(Exception):
         self.message = description
 
         # use only logger for output, further behavior depends on logger settings
-        logger = logging.getLogger(__package__)
         logger.error(self.__str__())
 
     def __str__(self):
@@ -64,7 +65,6 @@ async def get_value_from_json(json_string, param_name):
     except CryptoApiException as api_exception:
         return None, web.json_response({'API_error': api_exception.message})
     except JSONDecodeError:
-        logger = logging.getLogger(__package__)
         logger.error('JSON decode error: {}'.format(json_string))
         return None, web.json_response({'API_error': 'JSON decode error'})
     except Exception:
@@ -83,16 +83,17 @@ async def api_key_check(json_string, database):
             found_key = await result.first()
 
             if found_key:
-                return True, web.json_response({'api_key_check': True}), found_key.id
+                return True, web.json_response({'result': True}), found_key.id
             else:
                 raise CryptoApiException(inspect.stack()[1].function, 'API key does not exist')
 
     except CryptoApiException as api_key_exception:
-        return False, web.json_response({'api_key_error': api_key_exception.message}), None
-    except JSONDecodeError as json_decode_error:
-        return False, web.json_response({'api_key_error': json_decode_error.msg}), None
+        return False, web.json_response({'API_error': api_key_exception.message}), None
+    except JSONDecodeError:
+        logger.error('JSON decode error: {}'.format(json_string))
+        return False, web.json_response({'API_error': 'JSON decode error'}), None
     except Exception:
-        return False, web.json_response({'api_key_error': 'Exception'}), None
+        return False, web.json_response({'API_error': 'Exception'}), None
 
 
 async def address_owner_check(user_id, json_string, database, param_name):
@@ -109,14 +110,15 @@ async def address_owner_check(user_id, json_string, database, param_name):
             found_address = await result.first()
 
             if found_address:
-                return True, web.json_response({'address_owner_check': True}),\
+                return True, web.json_response({'result': True}),\
                        found_address.blockchain_address, found_address.id
             else:
                 raise CryptoApiException(inspect.stack()[1].function, 'This is not your address')
 
     except CryptoApiException as address_exception:
-        return False, web.json_response({'address_error': address_exception.message}), None, None
-    except JSONDecodeError as json_decode_error:
-        return False, web.json_response({'address_error': json_decode_error.msg}), None, None
+        return False, web.json_response({'API_error': address_exception.message}), None, None
+    except JSONDecodeError:
+        logger.error('JSON decode error: {}'.format(json_string))
+        return False, web.json_response({'API_error': 'JSON decode error'}), None, None
     except Exception:
-        return False, web.json_response({'address_error': 'Exception'}), None, None
+        return False, web.json_response({'API_error': 'Exception'}), None, None

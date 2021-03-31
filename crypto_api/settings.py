@@ -3,7 +3,7 @@ import yaml
 
 BASE_DIR = pathlib.Path(__file__).parent.parent
 API_KEY_LENGTH = 64
-GWEI = 10 ** 18
+WEI = 10 ** 18
 
 config_path = BASE_DIR / 'config' / 'ibit_task.yaml'
 

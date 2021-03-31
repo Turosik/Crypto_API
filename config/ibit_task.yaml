@@ -8,7 +8,9 @@ postgres:
 
 ethereum:
   chainId: 4224
-  IPCProvider: /home/alexk/PycharmProjects/Ibit_task/ETH/geth.ipc
+  IPCProvider: /home/turosik/PycharmProjects/Ibit_task/ETH/geth.ipc
+  gas: 2000000
+
 
 ethereum_url:
   IP: 127.0.0.1

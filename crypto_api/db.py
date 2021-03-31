@@ -75,7 +75,7 @@ async def save_new_address(new_address, private_key, user_id, database):
         if not record:
             raise RecordNotFound(inspect.stack()[1].function, 'Error saving new address for user {}'.format(user_id))
 
-        return web.json_response({'new_address': new_address})
+        return web.json_response({'result': new_address})
 
 
 async def save_new_transaction(address_id, address_to, nonce, tx_hash, database):
@@ -86,7 +86,7 @@ async def save_new_transaction(address_id, address_to, nonce, tx_hash, database)
         if not record:
             raise RecordNotFound(inspect.stack()[1].function, 'Error saving new transaction {}'.format(tx_hash))
 
-        return web.json_response({'new_transaction': tx_hash})
+        return web.json_response({'result': tx_hash})
 
 
 async def get_address_attributes(address, database):
@@ -105,11 +105,11 @@ async def get_nonce(address_id, database) -> int:
         result = await conn.execute(api_transactions.select()
                                     .where(api_transactions.columns.address_from == address_id)
                                     .order_by(api_transactions.columns.nonce.desc()))
-        found = await result.fetchone()
-        if not found:
+        record = await result.fetchone()
+        if not record:
             return 0
 
-        return found.nonce
+        return record.nonce
 
 
 async def init_pg(app):
