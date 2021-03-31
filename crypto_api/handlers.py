@@ -9,9 +9,6 @@ from crypto_api.db import save_new_address, RecordNotFound, save_new_transaction
 from crypto_api.ethereum import create_new_address, get_balance, send_transaction, get_transaction_status
 from crypto_api.utils import api_key_check, address_owner_check, get_value_from_json, CryptoApiException
 
-logger = logging.getLogger(__package__)
-log_info = 'API call, method {}, response {}'
-
 
 async def ping(request):
     pong = {'ping': 'pong'}
@@ -19,7 +16,10 @@ async def ping(request):
 
 
 async def handle(request):
+    # TODO wft __package__ is empty
+    logger = logging.getLogger('crypto_api')
     raw_data = await request.read()
+    # TODO decode exceptions?
     json_string = raw_data.decode('utf-8')
     try:
         post_data = json.loads(json_string)
@@ -30,12 +30,14 @@ async def handle(request):
         if not post_data['method']:
             raise CryptoApiException(handle.__name__, 'Parameter method is empty')
 
-        method_handle_function = getattr(sys.modules[__name__], 'api_' + post_data['method'], 'api_unknown')
+        # find proper function in that module by method name and call it if it is callable
+        method_handle_function = getattr(sys.modules[__name__], 'api_' + post_data['method'].lower(), 'api_unknown')
         if callable(method_handle_function):
-            # TODO now call the proper handler
-            return web.json_response({'result': 'callable'})
-            # reply = func(request)
+            result = await method_handle_function(request, json_string)
+            logger.info('API call, method {}, response {}'.format(post_data['method'].lower(), result.text))
+            return result
         else:
+            logger.error('Unknown method {}'.format(post_data['method']))
             return web.json_response({'API_error': 'Unknown method {}'.format(post_data['method'])})
 
     except CryptoApiException as api_exception:
@@ -48,32 +50,26 @@ async def handle(request):
         return web.json_response({'API_error': 'Unsupported argument type'})
 
 
-async def api_create_address(request):
-    raw_data = await request.read()
-    json_string = raw_data.decode('utf-8')
+async def api_create_address(request, json_string):
     key_check, response, user_id = await api_key_check(json_string, request.app['db'])
-    post_data = json.loads(json_string)
-    if 'password' not in post_data:
-        return web.json_response({'account_creation_error': 'Password not found in POST data'})
-    password = post_data['password']
+    if not key_check:
+        return response
+
+    password, response = await get_value_from_json(json_string, 'password')
     if not password:
-        return web.json_response({'account_creation_error': 'Password should not be empty'})
+        return response
 
-    if key_check:
-        new_address, private_key = await create_new_address(password)
-        try:
-            response = await save_new_address(new_address, private_key, user_id, request.app['db'])
-        except RecordNotFound as exception:
-            # TODO handle exceptions
-            pass
+    new_address, private_key = await create_new_address(password)
+    try:
+        response = await save_new_address(new_address, private_key, user_id, request.app['db'])
+    except RecordNotFound as exception:
+        # TODO handle exceptions
+        pass
 
-    logger.info(log_info.format('create-address', response.text))
     return response
 
 
-async def api_get_balance(request):
-    raw_data = await request.read()
-    json_string = raw_data.decode('utf-8')
+async def api_get_balance(request, json_string):
     key_check, response, user_id = await api_key_check(json_string, request.app['db'])
     if key_check:
         owner_check, response, address, _ = await address_owner_check(user_id, json_string,
@@ -85,9 +81,7 @@ async def api_get_balance(request):
     return response
 
 
-async def api_send_transaction(request):
-    raw_data = await request.read()
-    json_string = raw_data.decode('utf-8')
+async def api_send_transaction(request, json_string):
     key_check, response, user_id = await api_key_check(json_string, request.app['db'])
     if not key_check:
         return response
@@ -114,10 +108,7 @@ async def api_send_transaction(request):
     return response
 
 
-async def api_get_transaction_status(request):
-    raw_data = await request.read()
-    json_string = raw_data.decode('utf-8')
-
+async def api_get_transaction_status(request, json_string):
     key_check, response, _ = await api_key_check(json_string, request.app['db'])
     if not key_check:
         return response

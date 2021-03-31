@@ -20,38 +20,57 @@ async def create_new_private_key() -> str:
     return ''.join(random.choice(string.hexdigits) for _ in range(64)).lower()
 
 
-async def create_new_address(password):
-    private_key = await create_new_private_key()
-    async with aiohttp.ClientSession() as session:
-        async with session.post(URL, json={"jsonrpc": "2.0",
-                                           "method": "personal_importRawKey",
-                                           "params": [private_key, password],
-                                           "id": 1}) as response:
-            # TODO response status and error handling
-            print("Status:", response.status)
-            print("Content-type:", response.headers['content-type'])
-            response = await response.json()
-            print(response)
-            print(response.get('result'))
+async def get_result(response):
+    if response.status != 200:
+        raise CryptoApiException(inspect.stack()[1].function,
+                                 'Connection error, status {}'.format(response.status))
 
-    return response.get('result'), private_key
+    response = await response.json()
+
+    error = response.get('error')
+    if error:
+        raise CryptoApiException(inspect.stack()[1].function,
+                                 'Error: {}'.format('unknown' if 'message' not in error
+                                                    else error['message']))
+
+    return response.get('result')
+
+
+async def create_new_address(password):
+    try:
+        private_key = await create_new_private_key()
+        async with aiohttp.ClientSession() as session:
+            async with session.post(URL, json={"jsonrpc": "2.0",
+                                               "method": "personal_importRawKey",
+                                               "params": [private_key, password],
+                                               "id": 1}) as response:
+                result = await get_result(response)
+                if result:
+                    return result, private_key, None
+                else:
+                    raise CryptoApiException(inspect.stack()[1].function,
+                                             'Unexpected result when adding new address')
+
+    except CryptoApiException as api_exception:
+        return None, None, web.json_response({'API_error': api_exception.message})
 
 
 async def get_balance(address):
-    async with aiohttp.ClientSession() as session:
-        async with session.post(URL, json={"jsonrpc": "2.0",
-                                           "method": "eth_getBalance",
-                                           "params": [address, "latest"],
-                                           "id": 1}) as response:
-            # TODO response status and error handling
-            print("Status:", response.status)
-            print("Content-type:", response.headers['content-type'])
-            response = await response.json()
-            print(response)
-            print(response.get('result'))
-            # TODO convert to decimal
+    try:
+        async with aiohttp.ClientSession() as session:
+            async with session.post(URL, json={"jsonrpc": "2.0",
+                                               "method": "eth_getBalance",
+                                               "params": [address, "latest"],
+                                               "id": 1}) as response:
+                result = await get_result(response)
+                if result:
+                    return web.json_response({'result': int(result, 0) / WEI})
+                else:
+                    raise CryptoApiException(inspect.stack()[1].function,
+                                             'Unexpected result when getting balance')
 
-    return int(response.get('result'), 0) / WEI
+    except CryptoApiException as api_exception:
+        return web.json_response({'API_error': api_exception.message})
 
 
 async def send_transaction(address_from, address_to, amount, database):
@@ -101,20 +120,7 @@ async def get_transaction_status(tx_hash):
                                                "method": "eth_getTransactionByHash",
                                                "params": [tx_hash],
                                                "id": 1}) as response:
-
-                if response.status != 200:
-                    raise CryptoApiException(inspect.stack()[1].function,
-                                             'Connection error, status {}'.format(response.status))
-
-                response = await response.json()
-
-                error = response.get('error')
-                if error:
-                    raise CryptoApiException(inspect.stack()[1].function,
-                                             'Error: {}'.format('unknown' if 'message' not in error
-                                                                else error['message']))
-
-                result = response.get('result')
+                result = await get_result(response)
                 if 'blockNumber' not in result:
                     raise CryptoApiException(inspect.stack()[1].function,
                                              'Parameter blockNumber not found')
