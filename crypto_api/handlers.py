@@ -1,11 +1,12 @@
 import json
+from json import JSONDecodeError
 
 from aiohttp import web
 
 from crypto_api import db
 from crypto_api.db import save_new_address, RecordNotFound
 from crypto_api.ethereum import create_new_address, get_balance
-from crypto_api.utils import api_key_check, address_owner_check
+from crypto_api.utils import api_key_check, address_owner_check, get_value_from_json
 
 
 async def handle(request):
@@ -56,9 +57,31 @@ async def api_get_balance(request):
     json_string = raw_data.decode('utf-8')
     key_check, response, user_id = await api_key_check(json_string, request.app['db'])
     if key_check:
-        owner_check, response, address = await address_owner_check(user_id, json_string, request.app['db'])
+        owner_check, response, address = await address_owner_check(user_id, json_string,
+                                                                   request.app['db'], 'address')
         if owner_check:
             balance = await get_balance(address)
             response = web.json_response({'balance': balance})
+
+    return response
+
+
+async def api_send_transaction(request):
+    raw_data = await request.read()
+    json_string = raw_data.decode('utf-8')
+    key_check, response, user_id = await api_key_check(json_string, request.app['db'])
+    if not key_check:
+        return response
+
+    owner_check, response, address_from = await address_owner_check(user_id, json_string,
+                                                                    request.app['db'], 'address_from')
+    if not owner_check:
+        return response
+
+    address_to, response = get_value_from_json(json_string, 'address_to')
+    if not address_to:
+        return response
+
+    # TODO send trx
 
     return response

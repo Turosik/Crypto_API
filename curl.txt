@@ -5,9 +5,9 @@ curl -X POST -H "Content-Type:application/json" --data '{"api_key":"123","addres
 
 /home/alexk/PycharmProjects/Ibit_task/ETH
 /home/turosik/PycharmProjects/Ibit_task/ETH
-geth --datadir /home/turosik/PycharmProjects/Ibit_task/ETH init genesis.json
-geth --datadir /home/turosik/PycharmProjects/Ibit_task/ETH account new
-geth attach http://127.0.0.1:8545 --datadir /home/turosik/PycharmProjects/Ibit_task/ETH
+geth --datadir /home/alexk/PycharmProjects/Ibit_task/ETH init genesis.json
+geth --datadir /home/alexk/PycharmProjects/Ibit_task/ETH account new
+geth attach http://127.0.0.1:8545 --datadir /home/alexk/PycharmProjects/Ibit_task/ETH
 
 Ethereum
 curl -X POST -H "Content-Type:application/json" --data '{"jsonrpc":"2.0","method":"eth_getBalance","params":["0x5aDe448076Ef1ED43d0C1949B82302a8771c23D3", "latest"],"id":1}' 127.0.0.1:8545

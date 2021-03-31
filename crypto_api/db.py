@@ -43,6 +43,18 @@ user_crypto_address = Table(
 )
 
 
+transactions = Table(
+    'api_transactions', meta,
+    Column('id', Integer, primary_key=True),
+    Column('user', Integer, ForeignKey('api_users.id')),
+    Column('created', DateTime, nullable=False, server_default=func.now()),
+    Column('address_from', Integer, ForeignKey('api_user_addresses.id')),
+    Column('address_to', String(42), nullable=False),
+    Column('nonce', Integer, nullable=False),
+    Column('tx_hash', String(66), nullable=False)
+)
+
+
 async def save_new_address(new_address, private_key, user_id, database):
     async with database.acquire() as conn:
         result = await conn.execute(user_crypto_address.insert().values(user=user_id, blockchain_address=new_address,

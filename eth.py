@@ -1,18 +1,21 @@
 from web3 import Web3
 from web3.auto import w3
 
+GWEI = 10 ** 18
+
+
 # connected = w3.isConnected()
 # print(connected)
-web3 = Web3(Web3.IPCProvider('/home/turosik/PycharmProjects/Ibit_task/ETH/geth.ipc'))
+web3 = Web3(Web3.IPCProvider('/home/alexk/PycharmProjects/Ibit_task/ETH/geth.ipc'))
 print(web3.isConnected())
 
 checksum_address = web3.toChecksumAddress('0x87c4496859d5ee16f96a3b49ec8e690470b21b53')
 print(checksum_address)
 transaction = {'to': checksum_address,
-               'value': 1000000000000000000000,
+               'value': 100 * GWEI,
                'gas': 2000000,
-               'gasPrice': 23456789765,
-               'nonce': 1,
+               'gasPrice': web3.eth.gasPrice,
+               'nonce': 2,
                'chainId': 4224
                }
 key = '0xdf6382e3ed7d145f6bd671aff412e1594c5e18f6da4be4d1eb43428ef7cd1a25'

@@ -7,6 +7,10 @@ postgres:
   port: 5432
 
 ethereum:
+  chainId: 4224
+  IPCProvider: /home/alexk/PycharmProjects/Ibit_task/ETH/geth.ipc
+
+ethereum_url:
   IP: 127.0.0.1
   port: 8545
 

@@ -1,9 +1,9 @@
 import aiohttp
 
-from crypto_api.settings import config
+from crypto_api.settings import config, GWEI
 
 RPC_HOST = 'http://{IP}:{port}'
-URL = RPC_HOST.format(**config['ethereum'])
+URL = RPC_HOST.format(**config['ethereum_url'])
 
 
 async def create_new_private_key() -> str:
@@ -45,4 +45,8 @@ async def get_balance(address):
             print(response.get('result'))
             # TODO convert to decimal
 
-    return response.get('result')
+    return int(response.get('result'), 0) / GWEI
+
+
+async def send_transaction(address_from, address_to, amount):
+    pass
