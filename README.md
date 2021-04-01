@@ -1,6 +1,17 @@
 # Crypto API
 <p>Notice! You should have Go-Ethereum node installed and running.</p>
 <p><b>Installation</b></p>
+1 - Clone Git<br>
+<code>git clone https://github.com/Turosik/Ibit_task.git</code><br>
+<code>cd Ibit_task</code><br>
+2 - Create and setup virtual environment<br>
+<code>virtualenv venv</code><br>
+<code>source ./venv/bin/activate</code><br>
+<code>pip install -r requirements.txt</code><br>
+3 - Create Postgre database using postgresSetup.sql<br> 
+<code>sudo -u postgres psql -f postgresSetup.sql</code><br>
+4 - Init database tables with command:<br>
+<code>python3 init_db.py</code>
 <hr>
 <p><b>API Methods</b></p>
 <p>Create new address on Ethereum blockchain.<br>
@@ -30,7 +41,7 @@ Parameters:<br>
 "amount": value in Ether<br></p>
 <p>Example<br>
 <code>curl -X POST -H "Content-Type:application/json" --data '{"method":"send_transaction","api_key":"sample_api_key","address_from":"0x48704b2c3915f709fa9b3b96a9340686ad9013d7","address_to":"0xf905fbb8b52ea4df323dae7201b2fbb068843755","amount":25}' 0.0.0.0:8080</code></p>
-<p>Returns the hash of transaction.</p>
+<p>Returns the hash of the transaction.</p>
 <hr>
 <p>Check the status of the transaction.<br>
 Parameters:<br>
