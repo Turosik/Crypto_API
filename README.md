@@ -6,8 +6,8 @@
 <p>Create new address on Ethereum blockchain.<br>
 Parameters:<br>
 <code>
-"method": "create_address"\
-"api_key": "your_api_key"\
+"method": "create_address"  &nbsp;
+"api_key": "your_api_key"  
 "password": "your_new_password"
 </code><br></p>
 <p>Example<br>
