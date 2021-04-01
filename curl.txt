@@ -4,11 +4,12 @@ curl -X GET 0.0.0.0:8080/ping
 curl -X POST -H "Content-Type:application/json" --data '{"api_key":"accAcSuylVHqBlYnhxctlYtMwlXEyWqGzGyZQggIZksOEqluzqwdQuBHxYZxXuIH"}' 0.0.0.0:8080/api-key
 curl -X POST -H "Content-Type:application/json" --data '{"api_key":"abc"}' 0.0.0.0:8080/api-key
 curl -X POST -H "Content-Type:application/json" --data '{"method":"create_address","api_key":"sample_api_key_jake","password":"qwerty"}' 0.0.0.0:8080
-curl -X POST -H "Content-Type:application/json" --data '{"method":"get_bALance","api_key":"sample_api_key_jake","address":"0x87c4496859d5ee16f96a3b49ec8e690470b21b53"}' 0.0.0.0:8080
-curl -X POST -H "Content-Type:application/json" --data '{"api_key":"123","address_from":"0xc122d8d0212a811606f502221a089bcc3c2d8897","address_to":"0x87c4496859d5ee16f96a3b49ec8e690470b21b53","amount":25}' 0.0.0.0:8080/send-transaction
+curl -X POST -H "Content-Type:application/json" --data '{"method":"get_bALance","api_key":"sample_api_key_Finn","address":"0x21e05bb3ff5382d55a15403c46447491742e44b8"}' 0.0.0.0:8080
+curl -X POST -H "Content-Type:application/json" --data '{"method":"get_bALance","api_key":"sample_api_key_Jake","address":"0x5aa0475e2f2fbb9b8fe8bf0169d404fa54802da9"}' 0.0.0.0:8080
+curl -X POST -H "Content-Type:application/json" --data '{"method":"send_transaction","api_key":"sample_api_key_Finn","address_from":"0x21e05bb3ff5382d55a15403c46447491742e44b8","address_to":"0x5aa0475e2f2fbb9b8fe8bf0169d404fa54802da9","amount":25}' 0.0.0.0:8080
+curl -X POST -H "Content-Type:application/json" --data '{"method":"send_transaction","api_key":"sample_api_key_Finn","address_from":"0x438496227843fc902dd2fdc5d794ab24bfd24e20","address_to":"0x5aa0475e2f2fbb9b8fe8bf0169d404fa54802da9","amount":25}' 0.0.0.0:8080
 
-curl -X POST -H "Content-Type:application/json" --data '{"method":"get_transaction_status","api_key":"abc","transaction_hash":"0xf9c6f7e73cca0bd32d4722a2ccbf167db1c4d0af03b5325f3f7713908629a807"}' 0.0.0.0:8080
-curl -X POST -H "Content-Type:application/json" --data '{"method":"get_transaction_status","api_key":"abc","transaction_hash":"0xa774edf0b646589d6048302865ba4f037ea3900d845133b5a8245ee697542974"}' 0.0.0.0:8080
+curl -X POST -H "Content-Type:application/json" --data '{"method":"get_transaction_status","api_key":"sample_api_key_Finn","transaction_hash":"0x78e6be84da33df26d8696d1df7fd4023d5f81028c2c18284c67189d14ec25363"}' 0.0.0.0:8080
 
 
 /home/alexk/PycharmProjects/Ibit_task/ETH
@@ -27,7 +28,8 @@ curl -X POST -H "Content-Type:application/json" --data '{"jsonrpc":"2.0","method
 curl -X POST -H "Content-Type:application/json" --data '{"jsonrpc":"2.0","method":"eth_accounts","params":[],"id":1}' 127.0.0.1:8545
 dfe4cce025b13c4f01f2b4618731ed76de0b3f85987f47e4f8c134ef89d134d6
 
-eth.sendTransaction({from: "0x5ade448076ef1ed43d0c1949b82302a8771c23d3", to: "0xc122d8d0212a811606f502221a089bcc3c2d8897", value: "10000000"})
+personal.unlockAccount("0x5ade448076ef1ed43d0c1949b82302a8771c23d3", "1234")
+eth.sendTransaction({from: "0x5ade448076ef1ed43d0c1949b82302a8771c23d3", to: "0x21e05bb3ff5382d55a15403c46447491742e44b8", value: "100000000000000000000"})
 
 curl -X POST -H "Content-Type:application/json" --data '{"jsonrpc":"2.0","method":"eth_blockNumber","params":[],"id":83}' 127.0.0.1:8545
 

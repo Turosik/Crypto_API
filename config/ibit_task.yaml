@@ -8,8 +8,8 @@ postgres:
 
 ethereum:
   chainId: 4224
-  IPCProvider: /home/turosik/PycharmProjects/Ibit_task/ETH/geth.ipc
-  gas: 2000000
+  IPCProvider: /home/alexk/PycharmProjects/Ibit_task/ETH/geth.ipc
+  gas: 900000
 
 
 ethereum_url:

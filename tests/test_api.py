@@ -23,3 +23,5 @@ async def test_create_multiple_addresses(api):
 
 async def test_get_balance_multiple_requests(api):
     await asyncio.gather(*(get_balance(api) for _ in range(50)))
+
+# async def test_
