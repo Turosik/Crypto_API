@@ -2,16 +2,14 @@
 <p>Notice! You should have Go-Ethereum node installed and running.</p>
 <p><b>Installation</b></p>
 1 - Clone Git<br>
-<code>git clone https://github.com/Turosik/Ibit_task.git</code><br>
-<code>cd Ibit_task</code><br>
-2 - Create and setup virtual environment<br>
-<code>virtualenv venv</code><br>
-<code>source ./venv/bin/activate</code><br>
+2 - Create and setup virtual environment, don't forget to install requirements.<br>
 <code>pip install -r requirements.txt</code><br>
-3 - Create Postgre database using postgresSetup.sql<br> 
+3 - Don't forget to set your custom values in <code>project_folder/config/ibit_task.yaml</code> file.<br>
+4 - Create Postgre database using postgresSetup.sql<br> 
 <code>sudo -u postgres psql -f postgresSetup.sql</code><br>
-4 - Init database tables with command:<br>
-<code>python3 init_db.py</code>
+5 - Init database tables with command:<br>
+<code>python3 init_db.py</code><br>
+6 - Now run <code>project_folder/crypto_api/main.py</code><br>
 <hr>
 <p><b>API Methods</b></p>
 <p>Create new address on Ethereum blockchain.<br>
