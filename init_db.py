@@ -15,8 +15,8 @@ def create_tables(_engine):
 
 def sample_data(_engine):
     conn = engine.connect()
-    conn.execute(user.insert(), [{'username': 'Finn'}])
-    conn.execute(user.insert(), [{'username': 'Jake'}])
+    conn.execute(user.insert(), [{'username': 'Finn', 'api_key': 'sample_api_key_finn'}])
+    conn.execute(user.insert(), [{'username': 'Jake', 'api_key': 'sample_api_key_jake'}])
     conn.close()
 
 
