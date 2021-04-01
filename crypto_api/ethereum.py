@@ -21,6 +21,7 @@ async def create_new_private_key() -> str:
     return ''.join(random.choice(string.hexdigits) for _ in range(PRIVATE_KEY_LENGTH)).lower()
 
 
+# Universal function to get the result of JSON-RPC method used by other handler functions
 async def get_result(json):
     async with aiohttp.ClientSession() as session:
         async with session.post(URL, json=json) as response:
@@ -76,6 +77,7 @@ async def get_balance(address):
         return web.json_response({'API_error': api_exception.message})
 
 
+# send transactions is using Web3 lib
 async def send_transaction(address_from, address_to, amount, database):
     web3 = Web3(Web3.IPCProvider(config['ethereum']['IPCProvider']))
     print(web3.isConnected())
