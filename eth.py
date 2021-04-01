@@ -9,19 +9,19 @@ GWEI = 10 ** 18
 web3 = Web3(Web3.IPCProvider('/home/turosik/PycharmProjects/Ibit_task/ETH/geth.ipc'))
 print(web3.isConnected())
 
-checksum_address = web3.toChecksumAddress('0xc122d8d0212a811606f502221a089bcc3c2d8897')
+checksum_address = web3.toChecksumAddress('0x48704b2c3915f709fa9b3b96a9340686ad9013d7')
 nonce = web3.eth.getTransactionCount(checksum_address)
 
-checksum_address = web3.toChecksumAddress('0x87c4496859d5ee16f96a3b49ec8e690470b21b53')
+checksum_address = web3.toChecksumAddress('0x1dd2be30256b9ce1f31b19cc5c0f78d700c33024')
 print(checksum_address)
 transaction = {'to': checksum_address,
-               'value': 100 * GWEI,
+               'value': 10 * GWEI,
                'gas': 2000000,
                'gasPrice': web3.eth.gasPrice,
-               'nonce': nonce + 1,
+               'nonce': nonce + 12,
                'chainId': 4224
                }
-key = '0xdf6382e3ed7d145f6bd671aff412e1594c5e18f6da4be4d1eb43428ef7cd1a25'
+key = '0xaaeaf7393e305df0fc43fe4b29c3b58f9ba1aa08c4ae8e1ad96bac1b0bddea29'
 
 
 signed = web3.eth.account.sign_transaction(transaction, key)
@@ -33,9 +33,9 @@ print(tx_hash)
 print(tx_id)
 
 
-print(web3.eth.getTransactionCount(checksum_address))
-checksum_address = web3.toChecksumAddress('0xc122d8d0212a811606f502221a089bcc3c2d8897')
-print(web3.eth.getTransactionCount(checksum_address))
+# print(web3.eth.getTransactionCount(checksum_address))
+# checksum_address = web3.toChecksumAddress('0xc122d8d0212a811606f502221a089bcc3c2d8897')
+# print(web3.eth.getTransactionCount(checksum_address))
 
 '''
 # web3 = Web3(Web3.HTTPProvider("http://127.0.0.1:8545"))

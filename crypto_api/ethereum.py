@@ -100,7 +100,7 @@ async def send_transaction(address_from, address_to, amount, database):
     transaction = {'to': checksum_address,
                    'value': web3.toWei(amount, 'ether'),  # int(round(amount * WEI)),
                    'gas': config['ethereum']['gas'],
-                   'gasPrice': web3.eth.gasPrice,
+                   'gasPrice': max(web3.eth.gasPrice, config['ethereum']['gasPrice']),
                    'nonce': nonce,
                    'chainId': int(config['ethereum']['chainId'])
                    }
@@ -113,7 +113,7 @@ async def send_transaction(address_from, address_to, amount, database):
     except ValueError as exception:
         logger = logging.getLogger(__package__)
         logger.error('Send transaction error: {}'.format(exception))
-        return None, None, web.json_response({'API_error': 'insufficient funds'})
+        return None, None, web.json_response({'API_error': str(exception)})  # 'insufficient funds'})
     return tx_hash, nonce, web.json_response({'result': tx_hash})
 
 
