@@ -16,8 +16,7 @@ async def ping(request):
 
 
 async def handle(request):
-    # TODO wft __package__ is empty
-    logger = logging.getLogger('crypto_api')
+    logger = logging.getLogger(__package__)
     raw_data = await request.read()
     # TODO decode exceptions?
     json_string = raw_data.decode('utf-8')
@@ -59,12 +58,14 @@ async def api_create_address(request, json_string):
     if not password:
         return response
 
-    new_address, private_key = await create_new_address(password)
+    new_address, private_key, response = await create_new_address(password)
+    if not new_address:
+        return response
+
     try:
         response = await save_new_address(new_address, private_key, user_id, request.app['db'])
-    except RecordNotFound as exception:
-        # TODO handle exceptions
-        pass
+    except RecordNotFound:
+        response = web.json_response({'API_error': 'Internal server error'})
 
     return response
 
@@ -76,7 +77,7 @@ async def api_get_balance(request, json_string):
                                                                       request.app['db'], 'address')
         if owner_check:
             balance = await get_balance(address)
-            response = web.json_response({'result': balance})
+            response = balance
 
     return response
 

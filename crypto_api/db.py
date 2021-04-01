@@ -11,8 +11,6 @@ from sqlalchemy import func
 
 from crypto_api.settings import API_KEY_LENGTH
 
-__all__ = ['user', 'user_crypto_address', 'api_transactions']
-
 meta = MetaData()
 
 
@@ -36,7 +34,7 @@ user = Table(
 user_crypto_address = Table(
     'api_user_addresses', meta,
     Column('id', Integer, primary_key=True),
-    Column('user', Integer, ForeignKey('api_users.id')),
+    Column('user', Integer, ForeignKey('api_users.id', ondelete='CASCADE')),
     Column('created', DateTime, nullable=False, server_default=func.now()),
     Column('blockchain_address', String(42), nullable=False),
     Column('blockchain_private_key', String(64), nullable=False)
@@ -47,7 +45,7 @@ api_transactions = Table(
     'api_transactions', meta,
     Column('id', Integer, primary_key=True),
     Column('created', DateTime, nullable=False, server_default=func.now()),
-    Column('address_from', Integer, ForeignKey('api_user_addresses.id')),
+    Column('address_from', Integer, ForeignKey('api_user_addresses.id', ondelete='CASCADE')),
     Column('address_to', String(42), nullable=False),
     Column('nonce', Integer, nullable=False),
     Column('tx_hash', String(66), nullable=False)

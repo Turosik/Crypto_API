@@ -1,5 +1,3 @@
-from time import sleep
-
 from sqlalchemy import create_engine, MetaData
 from crypto_api.db import user, user_crypto_address, api_transactions
 from crypto_api.settings import config
@@ -14,10 +12,11 @@ def create_tables(_engine):
 
 
 def sample_data(_engine):
-    conn = engine.connect()
-    conn.execute(user.insert(), [{'username': 'Finn', 'api_key': 'sample_api_key_finn'}])
-    conn.execute(user.insert(), [{'username': 'Jake', 'api_key': 'sample_api_key_jake'}])
-    conn.close()
+    # conn = engine.connect()
+    # conn.execute(user.insert(), [{'username': 'Finn', 'api_key': 'sample_api_key_finn'}])
+    # conn.execute(user.insert(), [{'username': 'Jake', 'api_key': 'sample_api_key_jake'}])
+    # conn.close()
+    pass
 
 
 if __name__ == '__main__':

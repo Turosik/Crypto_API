@@ -1,6 +1,6 @@
 from aiohttp import web
 
-from handlers import handle, ping
+from crypto_api.handlers import handle, ping
 
 
 def setup_routes(app):

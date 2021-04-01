@@ -1,5 +1,3 @@
-import logging
-
 from aiohttp import web
 
 from crypto_api.middlewares import error_middleware

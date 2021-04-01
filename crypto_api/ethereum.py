@@ -5,7 +5,7 @@ from aiohttp import web
 from web3 import Web3
 
 from crypto_api.db import get_address_attributes, get_nonce, RecordNotFound
-from crypto_api.settings import config, WEI
+from crypto_api.settings import config, WEI, PRIVATE_KEY_LENGTH
 from crypto_api.utils import CryptoApiException
 
 RPC_HOST = 'http://{IP}:{port}'
@@ -17,39 +17,42 @@ async def create_new_private_key() -> str:
     import string
     from datetime import datetime
     random.seed(datetime.now())
-    return ''.join(random.choice(string.hexdigits) for _ in range(64)).lower()
+    return ''.join(random.choice(string.hexdigits) for _ in range(PRIVATE_KEY_LENGTH)).lower()
 
 
-async def get_result(response):
-    if response.status != 200:
-        raise CryptoApiException(inspect.stack()[1].function,
-                                 'Connection error, status {}'.format(response.status))
+async def get_result(json):
+    async with aiohttp.ClientSession() as session:
+        async with session.post(URL, json=json) as response:
 
-    response = await response.json()
+            if response.status != 200:
+                raise CryptoApiException(inspect.stack()[1].function,
+                                         'Connection error, status {}'.format(response.status))
 
-    error = response.get('error')
-    if error:
-        raise CryptoApiException(inspect.stack()[1].function,
-                                 'Error: {}'.format('unknown' if 'message' not in error
-                                                    else error['message']))
+            response = await response.json()
 
-    return response.get('result')
+            error = response.get('error')
+            if error:
+                raise CryptoApiException(inspect.stack()[1].function,
+                                         'Error: {}'.format('unknown' if 'message' not in error
+                                                            else error['message']))
+
+            return response.get('result')
 
 
 async def create_new_address(password):
     try:
         private_key = await create_new_private_key()
-        async with aiohttp.ClientSession() as session:
-            async with session.post(URL, json={"jsonrpc": "2.0",
-                                               "method": "personal_importRawKey",
-                                               "params": [private_key, password],
-                                               "id": 1}) as response:
-                result = await get_result(response)
-                if result:
-                    return result, private_key, None
-                else:
-                    raise CryptoApiException(inspect.stack()[1].function,
-                                             'Unexpected result when adding new address')
+        json = {"jsonrpc": "2.0",
+                "method": "personal_importRawKey",
+                "params": [private_key, password],
+                "id": 1}
+
+        result = await get_result(json)
+        if result:
+            return result, private_key, None
+        else:
+            raise CryptoApiException(inspect.stack()[1].function,
+                                     'Unexpected result when adding new address')
 
     except CryptoApiException as api_exception:
         return None, None, web.json_response({'API_error': api_exception.message})
@@ -57,17 +60,16 @@ async def create_new_address(password):
 
 async def get_balance(address):
     try:
-        async with aiohttp.ClientSession() as session:
-            async with session.post(URL, json={"jsonrpc": "2.0",
-                                               "method": "eth_getBalance",
-                                               "params": [address, "latest"],
-                                               "id": 1}) as response:
-                result = await get_result(response)
-                if result:
-                    return web.json_response({'result': int(result, 0) / WEI})
-                else:
-                    raise CryptoApiException(inspect.stack()[1].function,
-                                             'Unexpected result when getting balance')
+        json = {"jsonrpc": "2.0",
+                "method": "eth_getBalance",
+                "params": [address, "latest"],
+                "id": 1}
+        result = await get_result(json)
+        if result:
+            return web.json_response({'result': int(result, 0) / WEI})
+        else:
+            raise CryptoApiException(inspect.stack()[1].function,
+                                     'Unexpected result when getting balance')
 
     except CryptoApiException as api_exception:
         return web.json_response({'API_error': api_exception.message})
@@ -115,19 +117,18 @@ async def send_transaction(address_from, address_to, amount, database):
 
 async def get_transaction_status(tx_hash):
     try:
-        async with aiohttp.ClientSession() as session:
-            async with session.post(URL, json={"jsonrpc": "2.0",
-                                               "method": "eth_getTransactionByHash",
-                                               "params": [tx_hash],
-                                               "id": 1}) as response:
-                result = await get_result(response)
-                if 'blockNumber' not in result:
-                    raise CryptoApiException(inspect.stack()[1].function,
-                                             'Parameter blockNumber not found')
-                if result['blockNumber']:
-                    return web.json_response({'result': 'mined'})
-                else:
-                    return web.json_response({'result': 'pending'})
+        json = {"jsonrpc": "2.0",
+                "method": "eth_getTransactionByHash",
+                "params": [tx_hash],
+                "id": 1}
+        result = await get_result(json)
+        if 'blockNumber' not in result:
+            raise CryptoApiException(inspect.stack()[1].function,
+                                     'Parameter blockNumber not found')
+        if result['blockNumber']:
+            return web.json_response({'result': 'mined'})
+        else:
+            return web.json_response({'result': 'pending'})
 
     except CryptoApiException as api_exception:
         return web.json_response({'API_error': api_exception.message})

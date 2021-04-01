@@ -3,3 +3,4 @@ aiopg>=1.2.1
 SQLAlchemy>=1.4.3
 PyYAML>=5.4.1
 web3>=5.17.0
+pytest>=6.2.2
