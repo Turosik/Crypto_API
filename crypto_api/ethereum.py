@@ -93,6 +93,7 @@ async def send_transaction(address_from, address_to, amount, database):
     checksum_address = web3.toChecksumAddress(address_from)
     current_nonce = await get_nonce(address_id, database)
     tx_count = web3.eth.getTransactionCount(checksum_address)
+    # it's not fast but very safe to choose for nonce the maximum value between saved in DB and the one from node
     nonce = max(current_nonce, tx_count) + 1
 
     checksum_address = web3.toChecksumAddress(address_to)
