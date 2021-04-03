@@ -5,8 +5,7 @@ import aiohttp
 from aiohttp import web
 from web3 import Web3
 
-from crypto_api.db import get_address_attributes, get_nonce, RecordNotFound, save_new_address, save_new_transaction, \
-    save_new_transaction_sync, get_nonce_sync
+from crypto_api.db import get_address_attributes, RecordNotFound, save_new_transaction_sync, get_nonce_sync
 from crypto_api.settings import config, WEI, PRIVATE_KEY_LENGTH
 from crypto_api.utils import CryptoApiException
 
@@ -145,4 +144,3 @@ async def get_transaction_status(tx_hash):
 
     except CryptoApiException as api_exception:
         return web.json_response({'API_error': api_exception.message})
-
