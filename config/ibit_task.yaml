@@ -7,9 +7,9 @@ postgres:
   port: 5432
 
 ethereum:
-  chainId: 4224
-  IPCProvider: /home/turosik/PycharmProjects/Ibit_task/ETH/geth.ipc
-  gas: 2000000
+  chainId: 151515
+  IPCProvider: /home/turosik/ETH/geth.ipc
+  gas: 90000
   gasPrice: 10000000000
 
 ethereum_url:

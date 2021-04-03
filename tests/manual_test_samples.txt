@@ -7,16 +7,16 @@ curl -X POST -H "Content-Type:application/json" --data '{"method":"create_addres
 curl -X POST -H "Content-Type:application/json" --data '{"method":"get_balance","api_key":"sample_api_key_Jake","address":"0x48704b2c3915f709fa9b3b96a9340686ad9013d7"}' 0.0.0.0:8080
 curl -X POST -H "Content-Type:application/json" --data '{"method":"get_bALance","api_key":"sample_api_key_Finn","address":"0xf905fbb8b52ea4df323dae7201b2fbb068843755"}' 0.0.0.0:8080
 curl -X POST -H "Content-Type:application/json" --data '{"method":"send_transaction","api_key":"sample_api_key_Jake","address_from":"0x48704b2c3915f709fa9b3b96a9340686ad9013d7","address_to":"0xf905fbb8b52ea4df323dae7201b2fbb068843755","amount":25}' 0.0.0.0:8080
-curl -X POST -H "Content-Type:application/json" --data '{"method":"send_transaction","api_key":"sample_api_key_Finn","address_from":"0x438496227843fc902dd2fdc5d794ab24bfd24e20","address_to":"0x5aa0475e2f2fbb9b8fe8bf0169d404fa54802da9","amount":25}' 0.0.0.0:8080
+curl -X POST -H "Content-Type:application/json" --data '{"method":"send_transaction","api_key":"sample_api_key_Finn","address_from":"0xf722ff482030cbc01a0a45633a9ccac9173bd107","address_to":"0x4a4ab6aef9f9e8fc9c08873530cf8dd21bb4be40","amount":1}' 0.0.0.0:8080
 
-curl -X POST -H "Content-Type:application/json" --data '{"method":"get_transaction_status","api_key":"sample_api_key_Finn","transaction_hash":"0x78e6be84da33df26d8696d1df7fd4023d5f81028c2c18284c67189d14ec25363"}' 0.0.0.0:8080
+curl -X POST -H "Content-Type:application/json" --data '{"method":"get_transaction_status","api_key":"sample_api_key_Finn","transaction_hash":"0x506374f8df66e4efe2c8d41408ae95ecf5ca7e2db3ec23977b5644eb77417bbe"}' 0.0.0.0:8080
 
 
 /home/alexk/PycharmProjects/Ibit_task/ETH
 /home/turosik/PycharmProjects/Ibit_task/ETH
 geth --datadir /home/turosik/PycharmProjects/Ibit_task/ETH init genesis.json
 geth --datadir /home/turosik/PycharmProjects/Ibit_task/ETH account new
-geth attach http://127.0.0.1:8545 --datadir /home/turosik/PycharmProjects/Ibit_task/ETH
+geth attach http://127.0.0.1:8545 --datadir /home/turosik/ETH
 
 Ethereum
 curl -X POST -H "Content-Type:application/json" --data '{"jsonrpc":"2.0","method":"eth_getBalance","params":["0x820dbc580682289799CA11C980cb14c91a4c9Cd6", "latest"],"id":1}' 127.0.0.1:8545
@@ -28,8 +28,13 @@ curl -X POST -H "Content-Type:application/json" --data '{"jsonrpc":"2.0","method
 curl -X POST -H "Content-Type:application/json" --data '{"jsonrpc":"2.0","method":"eth_accounts","params":[],"id":1}' 127.0.0.1:8545
 dfe4cce025b13c4f01f2b4618731ed76de0b3f85987f47e4f8c134ef89d134d6
 
-personal.unlockAccount("0x324Cba095138B4bc8D576cC0E12B976b9bF8d4DD", "1234")
-eth.sendTransaction({from: "0x820dbc580682289799CA11C980cb14c91a4c9Cd6", to: "0x48704b2c3915f709fa9b3b96a9340686ad9013d7", value: "100000000000000000000"})
+0x506374f8df66e4efe2c8d41408ae95ecf5ca7e2db3ec23977b5644eb77417bbe
+0xfc6a3d418486fe6110373505315ae6954ca4e55f9fd280dfe326e42c613fd38d
+eth.getTransaction("0x13bab87042fcbe8c0ef20c9b6096c3d1251a7ed7753b2b41b00fde06854fedce")
+
+
+personal.unlockAccount("0xb9157e92bf89d246a5687169ecb13b2f9ec0550f", "some_password")
+eth.sendTransaction({from: "0xb9157e92bf89d246a5687169ecb13b2f9ec0550f", to: "0xc3fc58d82d7e472b42080ad383e30f7b32a3a35f", value: "100000000000000000000"})
 
 curl -X POST -H "Content-Type:application/json" --data '{"jsonrpc":"2.0","method":"eth_blockNumber","params":[],"id":83}' 127.0.0.1:8545
 
@@ -37,7 +42,7 @@ curl -X POST -H "Content-Type:application/json" --data '{"jsonrpc":"2.0","method
 curl -X POST -H "Content-Type:application/json" --data '{"jsonrpc":"2.0","method":"eth_getTransactionByHash","params":["0xa774edf0b646589d6048302865ba4f037ea3900d845133b5a8245ee697542974"],"id":1}' 127.0.0.1:8545
 
 
-eth.getBalance("0x324Cba095138B4bc8D576cC0E12B976b9bF8d4DD").toNumber()
+eth.getBalance("0xc3fc58d82d7e472b42080ad383e30f7b32a3a35f").toNumber()
 
 curl -X POST -H "Content-Type:application/json" --data '{"jsonrpc":"2.0","method":"eth_sendTransaction","params":[{"from":"0x324Cba095138B4bc8D576cC0E12B976b9bF8d4DD","to":"0xB5A6C36bd7a2F6394dc91D27880496245A8405Ed","gas":"0x76c0","gasPrice":"0x9184e72a000","value":"0x1166c51744e4640000"}],"id":1}' 127.0.0.1:8545
 curl -X POST -H "Content-Type:application/json" --data '{"jsonrpc":"2.0","method":"eth_signTransaction","params":[{"from":"0x324Cba095138B4bc8D576cC0E12B976b9bF8d4DD","to":"0xB5A6C36bd7a2F6394dc91D27880496245A8405Ed","gas":"0x76c0","gasPrice":"0x9184e72a000","value":"0x1166c51744e4640000","nonce":"0x1"}],"id":1}' 127.0.0.1:8545

@@ -100,11 +100,10 @@ async def api_send_transaction(request, json_string):
     if not amount:
         return response
 
-    tx_hash, nonce, response = await send_transaction(address_from, address_to, amount, request.app['db'])
+    tx_hash, nonce, response = await send_transaction(address_from, address_to, amount,
+                                                      request.app['db'], request.app['db_sync'])
     if not tx_hash:
         return response
-
-    response = await save_new_transaction(address_id, address_to, nonce, tx_hash, request.app['db'])
 
     return response
 
