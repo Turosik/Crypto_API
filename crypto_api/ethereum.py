@@ -21,7 +21,7 @@ async def create_new_private_key() -> str:
     return ''.join(random.choice(string.hexdigits) for _ in range(PRIVATE_KEY_LENGTH)).lower()
 
 
-# Universal function to get the result of JSON-RPC method used by other handler functions
+# Universal function to get the result of JSON-RPC method from the node used by other handler functions
 async def get_result(json):
     async with aiohttp.ClientSession() as session:
         async with session.post(URL, json=json) as response:

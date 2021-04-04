@@ -1,6 +1,5 @@
 import inspect
 import logging
-
 import aiopg.sa
 from aiohttp import web
 from sqlalchemy import (

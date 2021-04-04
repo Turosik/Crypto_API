@@ -32,6 +32,7 @@ def config_logger():
     return _logger
 
 
+# custom Exception will return short description to user and write some extended data to log file
 class CryptoApiException(Exception):
     def __init__(self, caller, description):
         self.caller = caller

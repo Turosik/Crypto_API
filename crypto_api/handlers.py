@@ -33,7 +33,7 @@ async def handle(request):
         method_handle_function = getattr(sys.modules[__name__], 'api_' + post_data['method'].lower(), 'api_unknown')
         if callable(method_handle_function):
             result = await method_handle_function(request, post_data)
-            logger.info('API call, method {}, response {}'.format(post_data['method'].lower(), result.text))
+            logger.info('API call,get_balance method {}, response {}'.format(post_data['method'].lower(), result.text))
             return result
         else:
             logger.error('Unknown method {}'.format(post_data['method']))
