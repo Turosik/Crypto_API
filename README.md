@@ -8,7 +8,7 @@ Ignoring this sequence will cause <code>test_mine_and_transact.py</code> to fail
 1 - Clone Git<br>
 2 - Create and setup virtual environment, don't forget to install requirements.<br>
 <code>pip install -r requirements.txt</code><br>
-3 - Don't forget to set your custom values in <code>../config/ibit_task.yaml</code> file.<br>
+3 - Don't forget to set your custom values in <code>../config/crypto_api_settings.yaml</code> file.<br>
 4 - Create Postgre database using postgresSetup.sql<br> 
 <code>sudo -u postgres psql -f postgresSetup.sql</code><br>
 5 - Init database tables with command:<br>
