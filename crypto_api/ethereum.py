@@ -42,6 +42,7 @@ async def get_result(json):
             return response.get('result')
 
 
+# create new address on the node using JSON-RPC
 async def create_new_address(password):
     private_key = await create_new_private_key()
     json = {"jsonrpc": "2.0",
@@ -57,6 +58,7 @@ async def create_new_address(password):
     return new_address, private_key
 
 
+# get balance from node using JSON-RPC
 async def get_balance(address):
     json = {"jsonrpc": "2.0",
             "method": "eth_getBalance",
@@ -83,10 +85,9 @@ async def send_transaction(address_from, address_to, amount, database, nonce_del
         return web.json_response({'API_error': 'Private key is empty'})
     hex_private_key = '0x' + private_key
 
-    checksum_address = web3.toChecksumAddress(address_from)
     current_nonce = await get_nonce(address_id, database)
     if prev_tx_count == 0:
-        tx_count = web3.eth.get_transaction_count(checksum_address)
+        tx_count = web3.eth.get_transaction_count(web3.toChecksumAddress(address_from))
     else:
         tx_count = prev_tx_count
     if DEBUG_MODE:
@@ -94,11 +95,11 @@ async def send_transaction(address_from, address_to, amount, database, nonce_del
         print('Nonce from DB {}'.format(current_nonce))
         print('Transaction count {}'.format(tx_count))
 
-    # it's not fast but very safe to choose for nonce the maximum value between saved in DB and the one from node
+    # it's not fast but very safe to choose for nonce the minimum value between saved in DB and the one from node
     nonce = min(current_nonce + 1, tx_count) + nonce_delta
 
-    # print('gasPrice {}'.format(web3.eth.gasPrice))
     if DEBUG_MODE:
+        # print('gasPrice {}'.format(web3.eth.gasPrice))
         print('Calculated nonce {}'.format(nonce))
 
     transaction = {'to': web3.toChecksumAddress(address_to),
@@ -112,7 +113,7 @@ async def send_transaction(address_from, address_to, amount, database, nonce_del
     signed = web3.eth.account.sign_transaction(transaction, hex_private_key)
 
     try:
-        send_result = web3.eth.sendRawTransaction(signed.rawTransaction)
+        send_result = web3.eth.send_raw_transaction(signed.rawTransaction)
         if DEBUG_MODE:
             print('Send result {}'.format(send_result.hex()))
 
