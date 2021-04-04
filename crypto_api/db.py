@@ -4,11 +4,11 @@ import aiopg.sa
 from aiohttp import web
 from sqlalchemy import (
     MetaData, Table, Column, ForeignKey,
-    Integer, String, DateTime, create_engine
+    Integer, String, DateTime
 )
 from sqlalchemy import func
 
-from crypto_api.settings import API_KEY_LENGTH, config
+from crypto_api.settings import API_KEY_LENGTH
 
 meta = MetaData()
 
@@ -92,7 +92,8 @@ async def get_address_attributes(address, database):
                                     .where(user_crypto_address.columns.blockchain_address == address))
         record = await result.first()
         if not record:
-            raise RecordNotFound(inspect.stack()[1].function, 'Error getting private key for address {}'.format(address))
+            raise RecordNotFound(inspect.stack()[1].function,
+                                 'Error getting private key for address {}'.format(address))
 
         return record.id, record.blockchain_private_key
 
