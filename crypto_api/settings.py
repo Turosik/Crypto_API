@@ -8,7 +8,7 @@ WEI = 10 ** 18
 
 DEBUG_MODE = False
 
-config_path = BASE_DIR / 'config' / 'ibit_task.yaml'
+config_path = BASE_DIR / 'config' / 'crypto_api_settings.yaml'
 
 
 def get_config(path):
