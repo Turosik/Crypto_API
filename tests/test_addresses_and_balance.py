@@ -1,3 +1,9 @@
+"""
+Creating sample data, users and API keys.
+Afterward creating some sample addresses on the Go-Ethereum node by testing related API method.
+More testing on get_balance method.
+"""
+
 import asyncio
 
 from crypto_api.db import user

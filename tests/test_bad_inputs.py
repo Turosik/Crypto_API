@@ -1,3 +1,9 @@
+"""
+Tests just for garbage inputs.
+Creating sample data in database is not required.
+"""
+
+
 async def test_ping(api):
     response = await api.get('/ping')
     assert response.status == 200
