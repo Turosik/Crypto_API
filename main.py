@@ -2,9 +2,9 @@ from aiohttp import web
 
 from crypto_api.middlewares import error_middleware
 from crypto_api.utils import config_logger
-from settings import config
-from routes import setup_routes
-from db import close_pg, init_pg
+from crypto_api.settings import config
+from crypto_api.routes import setup_routes
+from crypto_api.db import close_pg, init_pg
 
 app = web.Application()
 setup_routes(app)

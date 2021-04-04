@@ -10,7 +10,7 @@ You can use <code>../config/genesis.json</code> and <code>../config/startnode.sh
 <code>sudo -u postgres psql -f postgresSetup.sql</code><br>
 5 - Init database tables with command:<br>
 <code>python3 init_db.py</code><br>
-6 - Now run <code>../crypto_api/main.py</code><br>
+6 - Now run <code>python3 main.py</code><br>
 <hr>
 <p><b>API Methods</b></p>
 <p>Create new address on Ethereum blockchain.<br>
