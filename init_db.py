@@ -5,12 +5,14 @@ from crypto_api.settings import config
 DSN = "postgresql://{user}:{password}@{host}:{port}/{database}"
 
 
+# create database tables
 def create_tables(_engine):
     meta = MetaData()
     meta.drop_all(bind=_engine, tables=[user, user_crypto_address, api_transactions])
     meta.create_all(bind=_engine, tables=[user, user_crypto_address, api_transactions])
 
 
+# we will create sample data only in tests
 def sample_data(_engine):
     # conn = engine.connect()
     # conn.execute(user.insert(), [{'username': 'Finn', 'api_key': 'sample_api_key_finn'}])
