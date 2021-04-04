@@ -5,7 +5,7 @@
       <excludeFolder url="file://$MODULE_DIR$/venv" />
       <excludeFolder url="file://$MODULE_DIR$/ETH" />
     </content>
-    <orderEntry type="jdk" jdkName="Python 3.8 (Ibit_task)" jdkType="Python SDK" />
+    <orderEntry type="jdk" jdkName="Python 3.8 (Crypto_API)" jdkType="Python SDK" />
     <orderEntry type="sourceFolder" forTests="false" />
   </component>
   <component name="PackageRequirementsSettings">
