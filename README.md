@@ -1,7 +1,9 @@
 # Crypto API
 <p>Notice! You should have Go-Ethereum node installed and running. 
 You can use <code>../config/genesis.json</code> and <code>../config/startnode.sh</code> files to start a node.</p>
-<p><b>VERY IMPORTANT!</b> You must run</p>
+<p><b>VERY IMPORTANT!</b><br>
+You must run <code>test_addresses_and_balances.py</code> before <code>test_mine_and_transact.py</code> because it will create sample users and API keys. 
+Ignoring this sequence will make <code>test_mine_and_transact.py</code> fail!</p>
 <p><b>Installation</b></p>
 1 - Clone Git<br>
 2 - Create and setup virtual environment, don't forget to install requirements.<br>
