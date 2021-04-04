@@ -47,12 +47,13 @@ async def get_all_addresses(api, user_id):
         return records
 
 
-async def create_address(api, username, sequence_number) -> None:
-    # print('{} started'.format(sequence_number))
-    _user = await get_user(api, username)
+async def create_address(api, _user, sequence_number=0, printing=False) -> None:
+    if printing:
+        print('{} started'.format(sequence_number))
 
     # no password
-    # print('{} no password'.format(sequence_number))
+    if printing:
+        print('{} no password'.format(sequence_number))
     response = await api.post('', json={"method": "create_address",
                                         "api_key": _user.api_key})
     assert response.status == 200
@@ -61,18 +62,22 @@ async def create_address(api, username, sequence_number) -> None:
     assert data == expected
 
     # create_address api method
-    # print('{} create address'.format(sequence_number))
+    if printing:
+        print('{} create address'.format(sequence_number))
     response = await api.post('', json={"method": "create_address",
                                         "api_key": _user.api_key,
-                                        "password": "some_password"})
+                                        "password": "some_password_{}".format(sequence_number)})
 
+    if printing:
+        print('{} response {}'.format(sequence_number, response))
     assert response.status == 200
     data = await response.json()
     assert 'result' in data
     address = data['result']
 
     # check new address is in database
-    # print('{} check new address is in database'.format(sequence_number))
+    if printing:
+        print('{} checking db'.format(sequence_number))
     async with api.server.app['db'].acquire() as conn:
         result = await conn.execute(user_crypto_address.select()
                                     .where(user_crypto_address.c.blockchain_address == address))
@@ -80,8 +85,11 @@ async def create_address(api, username, sequence_number) -> None:
         assert record
         assert len(record.blockchain_private_key) == PRIVATE_KEY_LENGTH
 
-    # check new address was added to node
-    # print('{} check new address was added to node'.format(sequence_number))
+    if printing:
+        print('{} finished'.format(sequence_number))
+
+
+async def check_address_exists(address) -> bool:
     json = {"jsonrpc": "2.0",
             "method": "eth_accounts",
             "params": [],
@@ -91,9 +99,12 @@ async def create_address(api, username, sequence_number) -> None:
             assert response.status == 200
             response = await response.json()
             assert 'error' not in response
-            assert address in response.get('result')
+            if 'result' in response:
+                if address in response.get('result'):
+                    return True
 
-    # print('{} finished'.format(sequence_number))
+    return False
+
 
 async def check_get_balance(api):
     _user_1 = await get_user(api, USER_1)
@@ -252,7 +263,7 @@ async def get_transaction_status(api, _user, tx_hash):
     data = await response.json()
     assert 'result' in data
     if data['result']:
-        assert data['result'] in ['pending', 'mined']
+        assert data['result'] in ['pending', 'mined', 'does not exist']
         return data['result']
     return None
 

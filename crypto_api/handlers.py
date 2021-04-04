@@ -44,8 +44,8 @@ async def handle(request):
     except JSONDecodeError:
         logger.error('JSON decode error: {}'.format(json_string))
         return web.json_response({'API_error': 'JSON decode error'})
-    except TypeError:
-        logger.error('Unsupported argument type: {}'.format(json_string))
+    except TypeError as exception:
+        logger.error('TypeError: {}'.format(exception))
         return web.json_response({'API_error': 'Unsupported argument type'})
 
 
@@ -100,8 +100,7 @@ async def api_send_transaction(request, json_string):
     if not amount:
         return response
 
-    tx_hash, nonce, response = await send_transaction(address_from, address_to, amount,
-                                                      request.app['db'], request.app['db_sync'])
+    tx_hash, nonce, response = await send_transaction(address_from, address_to, amount, request.app['db'])
     if not tx_hash:
         return response
 

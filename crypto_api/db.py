@@ -87,13 +87,6 @@ async def save_new_transaction(address_id, address_to, nonce, tx_hash, database)
         return web.json_response({'result': tx_hash})
 
 
-def save_new_transaction_sync(address_id, address_to, nonce, tx_hash, database):
-    with database.connect() as conn:
-        conn.execute(api_transactions.insert().values(address_from=address_id, address_to=address_to,
-                                                      nonce=nonce, tx_hash=tx_hash))
-        return web.json_response({'result': tx_hash})
-
-
 async def get_address_attributes(address, database):
     async with database.acquire() as conn:
         result = await conn.execute(user_crypto_address.select()
@@ -117,18 +110,6 @@ async def get_nonce(address_id, database) -> int:
         return record.nonce
 
 
-def get_nonce_sync(address_id, database) -> int:
-    with database.connect() as conn:
-        result = conn.execute(api_transactions.select()
-                              .where(api_transactions.columns.address_from == address_id)
-                              .order_by(api_transactions.columns.nonce.desc()))
-        record = result.fetchone()
-        if not record:
-            return -1
-
-        return record.nonce
-
-
 async def init_pg(app):
     conf = app['config']['postgres']
     engine = await aiopg.sa.create_engine(
@@ -144,14 +125,3 @@ async def init_pg(app):
 async def close_pg(app):
     app['db'].close()
     await app['db'].wait_closed()
-
-
-async def init_pg_sync(app):
-    # we still need sync connection to save nonce in sync with sending transactions
-    # TODO better use Redis for that instead of Postgres
-    dsn = "postgresql://{user}:{password}@{host}:{port}/{database}"
-    db_url = dsn.format(**config['postgres'])
-    engine = create_engine(db_url)
-    app['db_sync'] = engine
-
-

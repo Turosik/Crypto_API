@@ -1,7 +1,8 @@
 import asyncio
 
 from crypto_api.db import user
-from tests.utils import clean_test_data, add_user, create_address, check_get_balance, USER_1, USER_2
+from tests.utils import clean_test_data, add_user, create_address, check_get_balance, USER_1, USER_2, \
+    check_address_exists, get_user, get_all_addresses
 
 
 # for these tests we need sample users
@@ -15,11 +16,22 @@ async def test_add_users(api):
 
 
 async def test_create_address_for_two_users(api):
-    await asyncio.gather(create_address(api, USER_1, 1), create_address(api, USER_2, 2))
+    user_1 = await get_user(api, USER_1)
+    user_2 = await get_user(api, USER_2)
+    await asyncio.gather(create_address(api, user_1), create_address(api, user_2))
 
 
-async def test_create_multiple_addresses(api):
-    await asyncio.gather(*(create_address(api, USER_2, x) for x in range(5)))
+async def test_create_many_addresses(api):
+    printing = False
+    amount_of_addresses_to_create = 10
+    _user = await get_user(api, USER_2)
+    await asyncio.gather(*(create_address(api, _user, i, printing) for i in range(amount_of_addresses_to_create)))
+
+    # check new address was added to node
+    addresses = await get_all_addresses(api, _user.id)
+    results = await asyncio.gather(*(check_address_exists(addresses[i].blockchain_address)
+                                     for i in range(len(addresses))))
+    assert all(result for result in results)
 
 
 async def test_get_balance_multiple_requests(api):

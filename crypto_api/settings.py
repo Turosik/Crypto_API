@@ -6,6 +6,8 @@ API_KEY_LENGTH = 64
 PRIVATE_KEY_LENGTH = 64
 WEI = 10 ** 18
 
+DEBUG_MODE = False
+
 config_path = BASE_DIR / 'config' / 'ibit_task.yaml'
 
 

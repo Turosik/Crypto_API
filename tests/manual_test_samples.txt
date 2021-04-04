@@ -7,15 +7,15 @@ curl -X POST -H "Content-Type:application/json" --data '{"method":"create_addres
 curl -X POST -H "Content-Type:application/json" --data '{"method":"get_balance","api_key":"sample_api_key_Jake","address":"0x48704b2c3915f709fa9b3b96a9340686ad9013d7"}' 0.0.0.0:8080
 curl -X POST -H "Content-Type:application/json" --data '{"method":"get_bALance","api_key":"sample_api_key_Finn","address":"0xf905fbb8b52ea4df323dae7201b2fbb068843755"}' 0.0.0.0:8080
 curl -X POST -H "Content-Type:application/json" --data '{"method":"send_transaction","api_key":"sample_api_key_Jake","address_from":"0x48704b2c3915f709fa9b3b96a9340686ad9013d7","address_to":"0xf905fbb8b52ea4df323dae7201b2fbb068843755","amount":25}' 0.0.0.0:8080
-curl -X POST -H "Content-Type:application/json" --data '{"method":"send_transaction","api_key":"sample_api_key_Finn","address_from":"0xf722ff482030cbc01a0a45633a9ccac9173bd107","address_to":"0x4a4ab6aef9f9e8fc9c08873530cf8dd21bb4be40","amount":1}' 0.0.0.0:8080
+curl -X POST -H "Content-Type:application/json" --data '{"method":"send_transaction","api_key":"sample_api_key_Finn","address_from":"0x0b28c52fe6d2fbf3fe66222cafa86a9fa30a4b8b","address_to":"0x8c338099b5107cc44b20471cf832272ee6768529","amount":1}' 0.0.0.0:8080
 
-curl -X POST -H "Content-Type:application/json" --data '{"method":"get_transaction_status","api_key":"sample_api_key_Finn","transaction_hash":"0x506374f8df66e4efe2c8d41408ae95ecf5ca7e2db3ec23977b5644eb77417bbe"}' 0.0.0.0:8080
+curl -X POST -H "Content-Type:application/json" --data '{"method":"get_transaction_status","api_key":"sample_api_key_Finn","transaction_hash":"0xf5568921fb2af71c5bc00d73a75c1a5d49b1ad3b6a14e1f9dbe1bebd3182d20f"}' 0.0.0.0:8080
 
 
 /home/alexk/PycharmProjects/Ibit_task/ETH
 /home/turosik/PycharmProjects/Ibit_task/ETH
-geth --datadir /home/turosik/PycharmProjects/Ibit_task/ETH init genesis.json
-geth --datadir /home/turosik/PycharmProjects/Ibit_task/ETH account new
+geth --datadir /home/turosik/ETH init genesis.json
+geth --datadir /home/turosik/ETH account new
 geth attach http://127.0.0.1:8545 --datadir /home/turosik/ETH
 
 Ethereum
@@ -30,7 +30,7 @@ dfe4cce025b13c4f01f2b4618731ed76de0b3f85987f47e4f8c134ef89d134d6
 
 0x506374f8df66e4efe2c8d41408ae95ecf5ca7e2db3ec23977b5644eb77417bbe
 0xfc6a3d418486fe6110373505315ae6954ca4e55f9fd280dfe326e42c613fd38d
-eth.getTransaction("0x13bab87042fcbe8c0ef20c9b6096c3d1251a7ed7753b2b41b00fde06854fedce")
+eth.getTransaction("0xe340fe6ec0418ed839ce1a50f58a095b1dc750daf63a37d7746076c6eb2fadb0")
 
 
 personal.unlockAccount("0xb9157e92bf89d246a5687169ecb13b2f9ec0550f", "some_password")

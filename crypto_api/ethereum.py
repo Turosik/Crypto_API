@@ -5,8 +5,8 @@ import aiohttp
 from aiohttp import web
 from web3 import Web3
 
-from crypto_api.db import get_address_attributes, RecordNotFound, save_new_transaction_sync, get_nonce_sync
-from crypto_api.settings import config, WEI, PRIVATE_KEY_LENGTH
+from crypto_api.db import get_address_attributes, RecordNotFound, get_nonce, save_new_transaction
+from crypto_api.settings import config, WEI, PRIVATE_KEY_LENGTH, DEBUG_MODE
 from crypto_api.utils import CryptoApiException
 
 RPC_HOST = 'http://{IP}:{port}'
@@ -79,7 +79,7 @@ async def get_balance(address):
 
 # send transactions is using Web3 lib
 # save transactions synchronous because we mush save nonce before trying to send next transaction
-async def send_transaction(address_from, address_to, amount, database, database_sync):
+async def send_transaction(address_from, address_to, amount, database, nonce_delta=0, prev_tx_count=0):
     web3 = Web3(Web3.IPCProvider(config['ethereum']['IPCProvider']))
 
     try:
@@ -92,15 +92,24 @@ async def send_transaction(address_from, address_to, amount, database, database_
 
     checksum_address = web3.toChecksumAddress(address_from)
     # current_nonce = await get_nonce(address_id, database)
-    current_nonce = get_nonce_sync(address_id, database_sync)
-    tx_count = web3.eth.get_transaction_count(checksum_address)
+    current_nonce = await get_nonce(address_id, database)
+    if prev_tx_count == 0:
+        tx_count = web3.eth.get_transaction_count(checksum_address)
+    else:
+        tx_count = prev_tx_count
+    if DEBUG_MODE:
+        print('Nonce delta {}'.format(nonce_delta))
+        print('Nonce from DB {}'.format(current_nonce))
+        print('Transaction count {}'.format(tx_count))
+
     # it's not fast but very safe to choose for nonce the maximum value between saved in DB and the one from node
-    nonce = max(current_nonce + 1, tx_count)
+    nonce = min(current_nonce + 1, tx_count) + nonce_delta
 
     checksum_address = web3.toChecksumAddress(address_to)
 
     # print('gasPrice {}'.format(web3.eth.gasPrice))
-    # print('nonce {}'.format(nonce))
+    if DEBUG_MODE:
+        print('Calculated nonce {}'.format(nonce))
 
     transaction = {'to': checksum_address,
                    'value': web3.toWei(amount, 'ether'),  # int(round(amount * WEI)),
@@ -113,14 +122,29 @@ async def send_transaction(address_from, address_to, amount, database, database_
     signed = web3.eth.account.sign_transaction(transaction, hex_private_key)
 
     try:
-        web3.eth.sendRawTransaction(signed.rawTransaction)
-        tx_hash = web3.toHex(web3.sha3(signed.rawTransaction))
+        send_result = web3.eth.sendRawTransaction(signed.rawTransaction)
+        if DEBUG_MODE:
+            print('Send result {}'.format(send_result.hex()))
+        tx_hash = send_result.hex()
+        # tx_receipt = web3.eth.waitForTransactionReceipt(tx_hash)
         # await save_new_transaction(address_id, address_to, nonce, tx_hash, database)
-        save_new_transaction_sync(address_id, address_to, nonce, tx_hash, database_sync)
+        await save_new_transaction(address_id, address_to, nonce, tx_hash, database)
     except ValueError as exception:
         logger = logging.getLogger(__package__)
         logger.error('Send transaction error: {}'.format(exception))
-        return None, None, web.json_response({'API_error': str(exception)})  # 'insufficient funds'})
+        if DEBUG_MODE:
+            print(str(exception))
+
+        # if there are any problems with nonce we will be recursively increment it until we find the correct value
+        # it's insane but still seems to be faster than using waitForTransactionReceipt
+        if 'replacement transaction underpriced' in str(exception) \
+                or 'nonce too low' in str(exception)\
+                or 'already known' in str(exception):
+            if DEBUG_MODE:
+                print('Recursive call with nonce delta {}'.format(nonce_delta + 1))
+            return await send_transaction(address_from, address_to, amount, database, nonce_delta + 1, tx_count)
+        else:
+            return None, None, web.json_response({'API_error': str(exception)})  # 'insufficient funds'})
     except RecordNotFound:
         return None, None, web.json_response({'API_error': 'Internal server error'})
 
@@ -144,3 +168,7 @@ async def get_transaction_status(tx_hash):
 
     except CryptoApiException as api_exception:
         return web.json_response({'API_error': api_exception.message})
+    except TypeError:
+        # no need to delete transactions after recursive nonce search was implemented
+        # delete_transaction_sync(tx_hash, database)
+        return web.json_response({'result': 'does not exist'})
