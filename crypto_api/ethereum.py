@@ -13,6 +13,7 @@ RPC_HOST = 'http://{IP}:{port}'
 URL = RPC_HOST.format(**config['ethereum_url'])
 
 
+# generate new private key
 async def create_new_private_key() -> str:
     import random
     import string
