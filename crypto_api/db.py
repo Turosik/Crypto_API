@@ -21,6 +21,7 @@ def generate_api_key():
     return ''.join(random.choice(string.ascii_letters) for _ in range(API_KEY_LENGTH))
 
 
+# API users and keys
 user = Table(
     'api_users', meta,
     Column('id', Integer, primary_key=True),
@@ -30,6 +31,7 @@ user = Table(
 )
 
 
+# store addresses created using API
 user_crypto_address = Table(
     'api_user_addresses', meta,
     Column('id', Integer, primary_key=True),
@@ -40,6 +42,7 @@ user_crypto_address = Table(
 )
 
 
+# transactions sent by API, main purpose is storing nonce
 api_transactions = Table(
     'api_transactions', meta,
     Column('id', Integer, primary_key=True),
@@ -98,6 +101,7 @@ async def get_address_attributes(address, database):
         return record.id, record.blockchain_private_key
 
 
+# get nonce from database
 async def get_nonce(address_id, database) -> int:
     async with database.acquire() as conn:
         result = await conn.execute(api_transactions.select()

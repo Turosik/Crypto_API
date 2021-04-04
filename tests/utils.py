@@ -89,6 +89,7 @@ async def create_address(api, _user, sequence_number=0, printing=False) -> None:
         print('{} finished'.format(sequence_number))
 
 
+# check that address exists on the node
 async def check_address_exists(address) -> bool:
     json = {"jsonrpc": "2.0",
             "method": "eth_accounts",
@@ -140,6 +141,7 @@ async def check_get_balance(api):
     assert data == expected
 
 
+# get address balance with own API
 async def get_balance(api, _user, _address):
     response = await api.post('', json={"method": "get_balance",
                                         "api_key": _user.api_key,
